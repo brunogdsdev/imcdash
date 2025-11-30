@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM maven:eclipse-temurin:25-jdk-ubi10-minimal AS build
+FROM maven:3.9.1-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copiar arquivos do projeto
