@@ -1,17 +1,21 @@
-# Usar imagem oficial do Eclipse Temurin com JDK 25
-FROM eclipse-temurin:25-jdk-alpine
-
-# Informar quem mantém a imagem
-LABEL maintainer="icestonebruno@gmail;.com"
-
-# Criar diretório da aplicação no container
+# Stage 1: Build
+FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 
-# Copiar o jar construído para dentro do container
-COPY target/imcdash-0.0.1-SNAPSHOT.jar app.jar
+# Copiar arquivos do projeto
+COPY pom.xml .
+COPY src ./src
 
-# Expõe a porta que o Spring Boot vai usar
+# Buildar o JAR
+RUN ./mvnw clean package -DskipTests
+
+# Stage 2: Runtime
+FROM eclipse-temurin:25-jdk-alpine
+WORKDIR /app
+
+# Copiar o JAR do stage anterior
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Comando para rodar a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]
