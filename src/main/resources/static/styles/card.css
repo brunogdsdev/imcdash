@@ -1,0 +1,94 @@
+/* ====== CARD BASE ====== */
+.card-tabela {
+    width: 100%;
+    flex: 1 1 300px; /* largura mínima de 300px, mas expande */
+    max-width: 380px; /* largura máxima para telas grandes */
+    max-height: 360px;
+    min-height: 230px;
+
+    padding: 12px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ====== TÍTULO ====== */
+.card-titulo {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2b3a67;
+    margin-bottom: 8px;
+}
+
+/* ====== CONTAINER DA TABELA ====== */
+.tabela-container {
+    flex-grow: 1;
+    overflow-y: auto;       /* scroll vertical */
+    border-top: 2px solid #2b3a67;
+    border-bottom: 2px solid #2b3a67;
+}
+
+/* ====== TABELA ====== */
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela thead th {
+    position: sticky;
+    top: 0;
+    background: #2b3a67;
+    color: #fff;
+    padding: 6px;
+    font-size: 14px;
+}
+
+.tabela tbody td {
+    padding: 6px;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* ====== RODAPÉ ====== */
+.card-footer {
+    text-align: center;
+    font-size: 13px;
+    padding-top: 6px;
+    color: #444;
+}
+
+/* ====== SCROLL PERSONALIZADO ====== */
+.tabela-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tabela-container::-webkit-scrollbar-thumb {
+    background: #8aa0c2;
+    border-radius: 4px;
+}
+
+/* ====== RESPONSIVIDADE PARA CELULAR ====== */
+@media (max-width: 480px) {
+
+    .card-tabela {
+        max-width: 100%;
+        height: 320px;
+        padding: 10px;
+    }
+
+    .tabela thead th,
+    .tabela tbody td {
+        font-size: 13px;
+        padding: 4px;
+    }
+
+    .card-titulo {
+        font-size: 16px;
+    }
+
+    .card-footer {
+        font-size: 12px;
+    }
+}

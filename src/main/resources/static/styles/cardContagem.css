@@ -1,0 +1,25 @@
+
+
+.card {
+    width: 260px;
+    height: 80px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.valor {
+    font-size: 46px;
+    font-weight: bold;
+    color: #0A7BFF;
+}
+
+.titulo {
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
+}
+

@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f1f1;
+    padding: 0;
+    margin: 0;
+    width: 100?;
+    overflow-x: hidden;
+}
+.box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;   /* centraliza */
+    padding: 10px;
+}
+
+
+@media (max-width: 480px) {
+    body{
+        padding: 2px;
+    }
+}
