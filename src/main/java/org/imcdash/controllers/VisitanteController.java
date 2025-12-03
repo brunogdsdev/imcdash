@@ -4,43 +4,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static org.imcdash.controllers.DashboardController.*;
+
 @RestController
 @RequestMapping("/api/sheets")
-public class SheetsController {
-
-    private final String API_KEY = "AIzaSyCqeytiZOohC_LasDdu2puR4gxLg1bVxK0";
-    private final String SHEET_ID = "1FO7GB7LwtG0LUIFyb5f2TUo83O5JYH8LDGoOL_2F0ng";
-    private final String RANGE = "VISITANTES 2025!A1:H269";
-    private final String url = String.format("https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s?key=%s",
-            SHEET_ID, RANGE, API_KEY);
-    private final RestTemplate rest = new RestTemplate();
-
-    private final String[] nomesMes = {
-            "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
-    };
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-
-
-    public <T> T getJson(Class<T> tipo){
-        return rest.getForObject(url, tipo);
-    }
-
-
-
-
+public class VisitanteController {
+    private static final String RANGE = "VISITANTES 2025!A2:H269";
 
     @GetMapping("/dados")
      String getDados(){
-        return getJson(String.class);
+        return getJson(String.class, RANGE);
     }
 
 
@@ -54,7 +32,7 @@ public class SheetsController {
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
 
-        var response = getJson(Map.class);
+        var response = getJson(Map.class,RANGE);
         List<List<String>> values = (List<List<String>>) response.get("values");
 
         long count = values.stream()
@@ -71,7 +49,7 @@ public class SheetsController {
                 .count();
 
         System.out.println(count);
-        return (int) count - 1;
+        return (int) count;
     }
 
     @GetMapping("/get-total")
@@ -84,11 +62,9 @@ public class SheetsController {
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
         try{
-            var response = getJson(Map.class);
+            var response = getJson(Map.class, RANGE);
 
             List<List<String>> values = (List<List<String>>) response.get("values");
-
-            values.remove(0);
             Map<String, Integer> contador = new HashMap<>();
 
             for (List<String> linha : values) {
@@ -135,11 +111,8 @@ public class SheetsController {
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
 
-        var response = getJson(Map.class);
+        var response = getJson(Map.class, RANGE);
         List<List<String>> values = (List<List<String>>) response.get("values");
-
-        // remover cabeçalho
-        values.remove(0);
 
         Map<String, Integer> contador = new LinkedHashMap<>();
 

@@ -1,7 +1,9 @@
-/* HEADER BASE */
+/* ======================= */
+/* HEADER DESKTOP */
+/* ======================= */
+
 .header {
-    width: 100%;
-    height: 150px;
+    width: 96%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -12,24 +14,23 @@
     border-bottom: 2px solid #e2e2e2;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 
-    margin-left: -50px;
-    margin-top: -50px;
+    flex-wrap: wrap; /* ESSENCIAL PARA RESPONSIVIDADE */
+    gap: 20px;       /* Espaço quando quebrar para baixo */
 }
 
 /* LOGO */
 .header-logo img {
-    height: 140px;
-    margin-top: 20px;
+    height: 65px;
     object-fit: contain;
 }
 
-/* TÍTULO */
+/* TÍTULO CENTRALIZADO */
 .header-titulo {
-    font-size: 46px;
+    flex: 1;                /* permite ocupar espaço e ficar centralizado */
+    text-align: center;     /* centraliza no desktop e mobile */
+    font-size: 28px;
     font-weight: bold;
     color: #0055cc;
-    text-transform: uppercase;
-    letter-spacing: 1px;
     margin: 0;
 }
 
@@ -38,43 +39,70 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;           /* permite quebrar quando faltar espaço */
+    justify-content: flex-end; /* no desktop, fica à direita */
 }
 
 .header-filtro input[type="date"] {
-    padding: 6px;
+    padding: 6px 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
 }
 
-.header-filtro button {
+button {
     padding: 6px 12px;
     background: #0055cc;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 6px;
-    font-size: 14px;
 }
 
-.header-filtro button:hover {
+button:hover {
     background: #003f99;
 }
 
-/* RESPONSIVIDADE */
+/* ======================= */
+/* RESPONSIVIDADE – MOBILE */
+/* ======================= */
+
 @media (max-width: 768px) {
+
     .header {
-        flex-direction: column;
-        gap: 15px;
-        padding: 20px;
-        text-align: center;
+        flex-direction: column;  /* tudo em coluna */
+        align-items: center;
+        text-align: center;      /* deixa tudo centralizado */
+        padding: 15px;
+        gap: 10px;
+        width: 98%;
     }
 
     .header-logo img {
-        height: 60px;
+        height: 55px;
+    }
+
+    .header-titulo {
+        font-size: 22px;
     }
 
     .header-filtro {
-        flex-wrap: wrap;
-        justify-content: center;
+        justify-content: center; /* fica centralizado */
+    }
+
+    .header-filtro label {
+        margin-top: 10px;
+        width: 100%;
+        text-align: left;
+    }
+
+    .header-filtro {
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .header-filtro input[type="date"],
+    .header-filtro button {
+        width: 100%;
     }
 }

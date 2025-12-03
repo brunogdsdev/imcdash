@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IMC</title>
+<!--    <link rel="stylesheet" href="/styles/cardContagem.css">-->
+<!--    <link rel="stylesheet" href="/styles/card.css">-->
+    <link rel="stylesheet" href="/styles/graficos.css">
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/styles/presenca.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- MENU SUPERIOR -->
+<nav class="top-menu">
+    <a href="dashboard" class="menu-item">Visitantes</a>
+    <a href="presenca" class="menu-item ativo">Presença</a>
+    <a href="membros" class="menu-item">Membros</a>
+</nav>
+
+<!-- HEADER -->
+<header class="header" >
+    <div class="header-logo">
+        <img src="https://i.ibb.co/Ltr6dPC/BANNER-IMC-maior-qualidade.jpg"
+             alt="BANNER-IMC-maior-qualidade"
+             border="0"
+        >
+    </div>
+
+    <h1 class="header-title">MEMBROS 2025</h1>
+
+
+    <div class="filtro-meses">
+        <div class="filtro-item">
+            <label for="startMonth">Mês Inicial</label>
+            <select id="startMonth">
+                <option value="1">Jan</option>
+                <option value="2">Fev</option>
+                <option value="3">Mar</option>
+                <option value="4">Abr</option>
+                <option value="5">Mai</option>
+                <option value="6">Jun</option>
+                <option value="7">Jul</option>
+                <option value="8">Ago</option>
+                <option value="9">Set</option>
+                <option value="10">Out</option>
+                <option value="11">Nov</option>
+                <option value="12">Dez</option>
+            </select>
+        </div>
+
+        <div class="filtro-item">
+            <label for="endMonth">Mês Final</label>
+            <select id="endMonth">
+                <option value="1">Jan</option>
+                <option value="2">Fev</option>
+                <option value="3">Mar</option>
+                <option value="4">Abr</option>
+                <option value="5">Mai</option>
+                <option value="6">Jun</option>
+                <option value="7">Jul</option>
+                <option value="8">Ago</option>
+                <option value="9">Set</option>
+                <option value="10">Out</option>
+                <option value="11">Nov</option>
+                <option value="12">Dez</option>
+            </select>
+        </div>
+        <button id="aplicarFiltro">Aplicar</button>
+
+    </div>
+
+
+</header>
+
+
+<!-- CONTAINER CENTRAL -->
+<div class="container">
+
+    <!-- ===== CARDS GERAIS ===== -->
+    <div class="cards-grid">
+
+<!--        <div class="card">-->
+<!--            <div class="card-title">TOTAL DE PRESENÇAS</div>-->
+<!--            <div class="card-value" id="total-presenca-geral">0</div>-->
+<!--        </div>-->
+
+<!--        <div class="card">-->
+<!--            <div class="card-title">TOTAL POR CULTO</div>-->
+<!--            <div class="table-container">-->
+<!--                <table class="table">-->
+<!--                    <thead>-->
+<!--                    <tr><th>Culto</th><th>Total</th></tr>-->
+<!--                    </thead>-->
+<!--                    <tbody id="tabela-presenca-cultos">-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="card">
+            <div class="card-title">Histórico de Lições</div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr><th>DATA</th><th>ESTUDO</th><th>AULA</th><th>PROF</th></tr>
+                    </thead>
+                    <tbody id="tabela-historico">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Ranking</div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr><th>Nome</th><th>Total</th></tr>
+                    </thead>
+                    <tbody id="ranking-presenca">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ======= TABELA MENSAL ======= -->
+    <!-- ======= TABELA MENSAL ======= -->
+    <div class="card full-width">
+        <h2>Total por Mês</h2>
+
+        <div class="table-container">
+            <table class="table">
+                <thead id="tabela-presenca-mensal-head"></thead>
+                <tbody id="tabela-presenca-mensal-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <!-- ======= GRÁFICO ======= -->
+    <div class="card-grafico ">
+        <h2>Presença Mensal</h2>
+        <canvas id="graficoPresencaMes" height="200"></canvas>
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="/scripts/presenca.js"></script>
+</body>
+</html>
