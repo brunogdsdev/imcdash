@@ -63,6 +63,11 @@ public class DashboardController {
         return "visitantes";
     }
 
+    @GetMapping("/")
+    String root(){
+        return "visitantes";
+    }
+
     @GetMapping("/presenca")
     String presenca(){
         return "presenca";
