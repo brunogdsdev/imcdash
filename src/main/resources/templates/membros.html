@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard IMC</title>
@@ -8,66 +9,1010 @@
     <link rel="stylesheet" href="/styles/graficos.css">
     <link rel="stylesheet" href="/styles/header.css">
     <link rel="stylesheet" href="/styles/index.css">
-    <link rel="stylesheet" href="/styles/membros.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* MENU SUPERIOR */
+        .top-menu {
+            width: 100%;
+            background: #003f99;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: 500;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            border-bottom: 2px solid #ffffff80;
+        }
+
+        .menu-item.ativo {
+            border-bottom: 2px solid #fff;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .top-menu {
+                flex-wrap: wrap;
+                gap: 20px;
+                width: 100%;
+            }
+        }
+
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px;
+            flex-wrap: wrap;
+        }
+
+        .header-logo {
+            height: 60px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            color: #0050c8;
+            font-weight: 800;
+        }
+
+        .header-date {
+            min-width: 240px;
+        }
+
+        /* MOBILE HEADER */
+        @media (max-width: 768px) {
+            .header {
+                text-align: center;
+                justify-content: center;
+                gap: 20px;
+            }
+        }
+
+
+        /* CONTAINER */
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* GRID DE CARDS */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* CARD */
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        /* FULL WIDTH */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* TABELAS */
+        .table-container {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #e8f0ff;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table td {
+            padding: 7px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* GRÁFICO */
+        #graficoPresencaMes {
+            width: 100% !important;
+            height: 200px !important;
+        }
+
+
+
+
+        /* Container dos filtros */
+        .filtro-meses {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Cada item (label + select) */
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Label */
+        .filtro-item label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        /* Select estilizado */
+        .filtro-item select {
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #ffffff;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+            transition: 0.2s ease;
+            min-width: 120px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L0 0h12L6 8z' fill='%23666'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        /* Ao focar */
+        .filtro-item select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Hover */
+        .filtro-item select:hover {
+            border-color: #888;
+        }
+
+        /* MOBILE */
+        @media (max-width: 480px) {
+            .filtro-meses {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filtro-item select {
+                width: 100%;
+            }
+        }
+
+
+
+        .lista-container {
+            background: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .lista-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .lista-container li {
+            padding: 6px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Números Clicáveis */
+        .numero-clicavel {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .numero-clicavel:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .numero-clicavel[data-chave*="batizados"],
+        .numero-clicavel[data-chave*="carteirinha"],
+        .numero-clicavel[data-chave*="foto"] {
+            background: rgba(0, 128, 0, 0.1);
+            border: 2px solid rgba(0, 128, 0, 0.3);
+        }
+
+        .numero-clicavel[data-chave*="nao-batizados"],
+        .numero-clicavel[data-chave*="sem-carteirinha"],
+        .numero-clicavel[data-chave*="sem-foto"] {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .numero-clicavel:hover[data-chave*="batizados"],
+        .numero-clicavel:hover[data-chave*="carteirinha"],
+        .numero-clicavel:hover[data-chave*="foto"] {
+            background: rgba(0, 128, 0, 0.2);
+            border-color: rgba(0, 128, 0, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 128, 0, 0.3);
+        }
+
+        .numero-clicavel:hover[data-chave*="nao-batizados"],
+        .numero-clicavel:hover[data-chave*="sem-carteirinha"],
+        .numero-clicavel:hover[data-chave*="sem-foto"] {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 4px 16px rgba(255, 0, 0, 0.3);
+        }
+
+        .numero-clicavel:active {
+            transform: scale(0.95);
+        }
+
+        /* Lista de Nomes Estilizada - Modal Fixo */
+        .lista-nomes-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .lista-nomes-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(0, 80, 200, 0.1);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lista-nomes-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #0050c8 0%, #003f99 100%);
+            color: white;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .lista-nomes-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .lista-nomes-count {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lista-nomes-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        .lista-nomes-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .lista-nomes-body {
+            padding: 25px 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        /* Scrollbar customizada */
+        .lista-nomes-body::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .lista-nomes-body::-webkit-scrollbar-track {
+            background: #f1f3f5;
+            border-radius: 10px;
+        }
+
+        .lista-nomes-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0050c8 0%, #003f99 100%);
+            border-radius: 10px;
+            border: 2px solid #f1f3f5;
+        }
+
+        .lista-nomes-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #003f99 0%, #002d70 100%);
+        }
+
+        .lista-nomes-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .lista-nomes-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            gap: 15px;
+        }
+
+        .lista-nomes-item:hover {
+            background: linear-gradient(135deg, #e8f0ff 0%, #f0f5ff 100%);
+            border-color: #0050c8;
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 80, 200, 0.15);
+        }
+
+        .lista-nomes-numero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #0050c8 0%, #003f99 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 80, 200, 0.3);
+        }
+
+        .lista-nomes-nome {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .lista-nomes-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6c757d;
+            font-size: 18px;
+            font-style: italic;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .lista-nomes-empty::before {
+            content: '📋';
+            display: block;
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .lista-nomes-container {
+                width: 95%;
+                max-height: 90vh;
+                border-radius: 12px;
+            }
+
+            .lista-nomes-header {
+                padding: 18px 20px;
+            }
+
+            .lista-nomes-header h2 {
+                font-size: 20px;
+            }
+
+            .lista-nomes-count {
+                font-size: 12px;
+                padding: 5px 12px;
+            }
+
+            .lista-nomes-close {
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+            }
+
+            .lista-nomes-body {
+                padding: 20px;
+                max-height: 400px;
+            }
+
+            .lista-nomes-item {
+                padding: 14px 16px;
+            }
+
+            .lista-nomes-numero {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+
+            .lista-nomes-nome {
+                font-size: 15px;
+            }
+        }
+
+        /* Tabela de Membros */
+        .tabela-membros-container {
+            margin-top: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .tabela-membros-header {
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #fefefe 0%, #fafafa 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tabela-membros-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .filtro-container {
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+        }
+
+        .filtro-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 15px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .filtro-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .filtro-input::placeholder {
+            color: #999;
+        }
+
+        .tabela-membros-body {
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        /* Scrollbar customizada para tabela */
+        .tabela-membros-body::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .tabela-membros-body::-webkit-scrollbar-track {
+            background: #f1f3f5;
+        }
+
+        .tabela-membros-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0050c8 0%, #003f99 100%);
+            border-radius: 10px;
+        }
+
+        .tabela-membros-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #003f99 0%, #002d70 100%);
+        }
+
+        .tabela-membros {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .tabela-membros thead {
+            background: linear-gradient(135deg, #e8f0ff 0%, #f0f5ff 100%);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tabela-membros th {
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: #0050c8;
+            border-bottom: 2px solid #0050c8;
+            white-space: nowrap;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tabela-membros td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .tabela-membros tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .tabela-membros tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8f0ff 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 80, 200, 0.1);
+        }
+
+        .tabela-membros tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Primeira coluna (nome) destacada */
+        .tabela-membros th:first-child,
+        .tabela-membros td:first-child {
+            font-weight: 600;
+            color: #0050c8;
+            position: sticky;
+            left: 0;
+            background: inherit;
+            z-index: 5;
+        }
+
+        .tabela-membros thead th:first-child {
+            background: linear-gradient(135deg, #e8f0ff 0%, #f0f5ff 100%);
+        }
+
+        .tabela-membros tbody tr:hover td:first-child {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8f0ff 100%);
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .tabela-membros-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabela-membros-header h2 {
+                font-size: 18px;
+            }
+
+            .filtro-container {
+                max-width: 100%;
+            }
+
+            .tabela-membros-body {
+                max-height: 400px;
+            }
+
+            .tabela-membros {
+                font-size: 12px;
+            }
+
+            .tabela-membros th,
+            .tabela-membros td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- MENU SUPERIOR -->
-<nav class="top-menu">
-    <a href="dashboard" class="menu-item">Visitantes</a>
-    <a href="presenca" class="menu-item ">Presença</a>
-    <a href="membros" class="menu-item ativo">Membros</a>
-</nav>
+    <!-- MENU SUPERIOR -->
+    <nav class="top-menu">
+        <a href="dashboard" class="menu-item">Visitantes</a>
+        <a href="presenca" class="menu-item ">Presença</a>
+        <a href="membros" class="menu-item ativo">Membros</a>
+    </nav>
 
-<!-- HEADER -->
-<header class="header" style="justify-content: flex-start;" >
-    <div class="header-logo">
-        <img src="https://i.ibb.co/Ltr6dPC/BANNER-IMC-maior-qualidade.jpg"
-             alt="BANNER-IMC-maior-qualidade"
-             border="0"
-        >
-    </div>
-    <h1 class="header-title">MEMBROS</h1>
-    <div class="container">
-        <div class="cards-grid">
-            <!-- CONTAGEM-->
-            <div class="card">
-                <div class="titulo">Membros cadastrados</div>
-                <div id="total" class="valor">...</div>
-            </div>
-
-            <div class="card">
-                <div class="titulo">Batizados</div>
-                <div id="batizado" class="valor">...</div>
-            </div>
-
-            <div class="card">
-                <div class="titulo">Carteirinha</div>
-                <div id="carteirinha" class="valor">...</div>
-            </div>
-
-            <div class="card">
-                <div class="titulo">Com Foto</div>
-                <div id="foto" class="valor">...</div>
-            </div>
-
+    <!-- HEADER -->
+    <header class="header" style="justify-content: flex-start;">
+        <div class="header-logo">
+            <img src="https://i.ibb.co/Ltr6dPC/BANNER-IMC-maior-qualidade.jpg" alt="BANNER-IMC-maior-qualidade"
+                border="0">
         </div>
+        <h1 class="header-title">MEMBROS</h1>
+        <div class="container">
+            <div class="cards-grid">
+                <!-- CONTAGEM-->
+                <div class="card">
+                    <div class="titulo">Membros cadastrados</div>
+                    <div id="total" class="valor">...</div>
+                </div>
+
+                <div class="card">
+                    <div class="titulo">Batizados</div>
+                    <div id="batizado" class="valor">...</div>
+                </div>
+
+                <div class="card">
+                    <div class="titulo">Carteirinha</div>
+                    <div id="carteirinha" class="valor">...</div>
+                </div>
+
+                <div class="card">
+                    <div class="titulo">Com Foto</div>
+                    <div id="foto" class="valor">...</div>
+                </div>
+
+            </div>
+        </div>
+
+    </header>
+
+
+    <!-- CONTAINER CENTRAL -->
+    <div class="container">
+
+        <!-- ===== CARDS GERAIS ===== -->
+
+
+        <!-- Tabela de Membros -->
+        <div class="tabela-membros-container">
+            <div class="tabela-membros-header">
+                <h2>Lista Completa de Membros</h2>
+                <div class="filtro-container">
+                    <input type="text" id="filtroNome" class="filtro-input" placeholder="🔍 Filtrar por nome..." />
+                </div>
+            </div>
+            <div class="tabela-membros-body">
+                <table id="tabelaMembros" class="tabela-membros">
+                    <thead id="tabelaMembrosHead"></thead>
+                    <tbody id="tabelaMembrosBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Overlay e Modal de nomes estilizado -->
+        <div id="listaNomesOverlay" class="lista-nomes-overlay" onclick="fecharLista()">
+            <div class="lista-nomes-container" onclick="event.stopPropagation()">
+                <div class="lista-nomes-header">
+                    <h2 id="listaNomesTitulo">Lista de Membros</h2>
+                    <span id="listaNomesCount" class="lista-nomes-count"></span>
+                    <button class="lista-nomes-close" onclick="fecharLista()">✕</button>
+                </div>
+                <div class="lista-nomes-body">
+                    <ul id="listaNomes"></ul>
+                </div>
+            </div>
+        </div>
+
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+        // membros.js
 
-</header>
+        let dadosNomes = {}; // Armazena os dados de nomes recebidos da API
+        let dadosTabela = []; // Armazena todos os dados da tabela
+        let headersTabela = []; // Armazena os headers da tabela
 
+        async function carregarContagem() {
+            try {
+                console.log("Carregando contagem...");
+                const resp = await fetch(`/api/membros/contagem`);
 
-<!-- CONTAINER CENTRAL -->
-<div class="container">
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
 
-    <!-- ===== CARDS GERAIS ===== -->
+                const data = await resp.json();
+                console.log("Dados recebidos:", data);
 
+                // Armazena os dados de nomes
+                dadosNomes = data.nomes || {};
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-<script src="/scripts/membros.js"></script>
+                document.getElementById("total").innerText = data.total;
+                formatarCampo("batizado", data.batizado, "batizados", "nao-batizados");
+                formatarCampo("foto", data.foto, "foto", "sem-foto");
+                formatarCampo("carteirinha", data.carteirinha, "carteirinha", "sem-carteirinha");
+            } catch (error) {
+                console.error("Erro ao carregar contagem:", error);
+                document.getElementById("total").innerText = "Erro";
+                document.getElementById("batizado").innerText = "Erro";
+                document.getElementById("foto").innerText = "Erro";
+                document.getElementById("carteirinha").innerText = "Erro";
+            }
+        }
+
+        function formatarCampo(id, valor, chaveVerde, chaveVermelho) {
+            // Separa os números antes e depois da barra
+            const [primeiro, segundo] = valor.split("/");
+
+            // Monta o HTML com cores e torna clicável
+            document.getElementById(id).innerHTML = `
+        <span class="numero-clicavel" style="color: green; font-weight: bold;cursor: pointer;" 
+              data-chave="${chaveVerde}">${primeiro}</span>
+        /
+        <span class="numero-clicavel" style="color: red; font-weight: bold;cursor: pointer;" 
+              data-chave="${chaveVermelho}">${segundo}</span>
+    `;
+        }
+
+        function mostrarListaNomes(chave, titulo) {
+            const nomes = dadosNomes[chave] || [];
+            const overlay = document.getElementById("listaNomesOverlay");
+            const tituloEl = document.getElementById("listaNomesTitulo");
+            const countEl = document.getElementById("listaNomesCount");
+            const listaEl = document.getElementById("listaNomes");
+
+            tituloEl.textContent = titulo;
+            countEl.textContent = `${nomes.length} membro${nomes.length !== 1 ? 's' : ''}`;
+            listaEl.innerHTML = "";
+
+            if (nomes.length === 0) {
+                listaEl.innerHTML = "<li class='lista-nomes-empty'>Nenhum membro encontrado</li>";
+            } else {
+                nomes.forEach((nome, index) => {
+                    const li = document.createElement("li");
+                    li.className = "lista-nomes-item";
+                    li.innerHTML = `<span class="lista-nomes-numero">${index + 1}</span><span class="lista-nomes-nome">${nome}</span>`;
+                    listaEl.appendChild(li);
+                });
+            }
+
+            overlay.style.display = "block";
+            document.body.style.overflow = "hidden"; // Previne scroll do body
+        }
+
+        function fecharLista() {
+            document.getElementById("listaNomesOverlay").style.display = "none";
+            document.body.style.overflow = "auto"; // Restaura scroll do body
+        }
+
+        async function carregarTabela() {
+            try {
+                console.log("Carregando tabela...");
+                const resp = await fetch(`/api/membros/todos`);
+
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
+
+                const data = await resp.json();
+                console.log("Dados da tabela recebidos:", data);
+
+                headersTabela = data.headers || [];
+                dadosTabela = data.dados || [];
+
+                renderizarTabela(dadosTabela);
+            } catch (error) {
+                console.error("Erro ao carregar tabela:", error);
+                document.getElementById("tabelaMembrosBody").innerHTML =
+                    "<tr><td colspan='100%' style='text-align: center; padding: 20px; color: #999;'>Erro ao carregar dados</td></tr>";
+            }
+        }
+
+        function renderizarTabela(dados) {
+            const thead = document.getElementById("tabelaMembrosHead");
+            const tbody = document.getElementById("tabelaMembrosBody");
+
+            // Limpa a tabela
+            thead.innerHTML = "";
+            tbody.innerHTML = "";
+
+            if (headersTabela.length === 0 || dados.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='100%' style='text-align: center; padding: 20px; color: #999;'>Nenhum dado disponível</td></tr>";
+                return;
+            }
+
+            // Cria o header
+            const headerRow = document.createElement("tr");
+            headersTabela.forEach(header => {
+                const th = document.createElement("th");
+                th.textContent = header || "";
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+
+            // Cria as linhas de dados
+            dados.forEach(linha => {
+                const tr = document.createElement("tr");
+                headersTabela.forEach((_, index) => {
+                    const td = document.createElement("td");
+                    td.textContent = linha[index] || "";
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarPorNome() {
+            const filtro = document.getElementById("filtroNome").value.toLowerCase().trim();
+
+            if (filtro === "") {
+                renderizarTabela(dadosTabela);
+                return;
+            }
+
+            const dadosFiltrados = dadosTabela.filter(linha => {
+                // Primeira coluna é o nome (índice 0)
+                const nome = (linha[0] || "").toLowerCase();
+                return nome.includes(filtro);
+            });
+
+            renderizarTabela(dadosFiltrados);
+        }
+
+        async function carregarMembrosTudo() {
+            await Promise.all([
+                carregarContagem(),
+                carregarTabela(),
+            ]);
+        }
+
+        // carregar padrão (todo ano) quando a página inicializar
+        window.addEventListener("DOMContentLoaded", () => {
+            carregarMembrosTudo();
+
+            // Event listener para o filtro
+            document.getElementById("filtroNome").addEventListener("input", filtrarPorNome);
+
+            // Adiciona event listeners para os números clicáveis
+            document.addEventListener("click", (e) => {
+                if (e.target.classList.contains("numero-clicavel")) {
+                    const chave = e.target.getAttribute("data-chave");
+                    let titulo = "";
+
+                    // Define o título baseado na chave
+                    switch (chave) {
+                        case "batizados":
+                            titulo = "Membros Batizados";
+                            break;
+                        case "nao-batizados":
+                            titulo = "Membros Não Batizados";
+                            break;
+                        case "carteirinha":
+                            titulo = "Membros com Carteirinha";
+                            break;
+                        case "sem-carteirinha":
+                            titulo = "Membros sem Carteirinha";
+                            break;
+                        case "foto":
+                            titulo = "Membros com Foto";
+                            break;
+                        case "sem-foto":
+                            titulo = "Membros sem Foto";
+                            break;
+                        default:
+                            titulo = "Lista de Membros";
+                    }
+
+                    mostrarListaNomes(chave, titulo);
+                }
+            });
+
+        });
+
+    </script>
 </body>
+
 </html>
