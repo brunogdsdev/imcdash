@@ -10,7 +10,57 @@
         <link rel="stylesheet" href="/styles/index.css">
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+        <style>
+            /* Melhorias de responsividade para visitantes */
+            @media (max-width: 768px) {
+                .box {
+                    flex-direction: column;
+                    padding: 10px 5px;
+                }
+                
+                .card-tabela {
+                    max-width: 100%;
+                    width: 100%;
+                }
+                
+                .card {
+                    width: 100%;
+                    max-width: 100%;
+                }
+                
+                .card-grafico {
+                    margin: 20px 5px;
+                    padding: 15px;
+                }
+                
+                .grafico-container {
+                    height: 250px !important;
+                }
+                
+                .tabela-container {
+                    overflow-x: auto;
+                }
+                
+                .tabela {
+                    min-width: 300px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .header-filtro {
+                    width: 100%;
+                }
+                
+                .header-filtro input[type="date"],
+                .header-filtro button {
+                    width: 100%;
+                }
+                
+                .card-grafico h2 {
+                    font-size: 18px;
+                }
+            }
+        </style>
     </head>
     <body>
     <nav class="top-menu">

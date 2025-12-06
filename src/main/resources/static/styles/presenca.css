@@ -178,14 +178,102 @@
 }
 
 /* MOBILE */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 15px;
+        padding: 20px 15px;
+    }
+    
+    .header-logo {
+        height: 50px;
+    }
+    
+    .header-title {
+        font-size: 22px;
+    }
+    
     .filtro-meses {
         flex-direction: column;
         align-items: stretch;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .filtro-item {
+        width: 100%;
     }
 
     .filtro-item select {
         width: 100%;
+        min-width: 100%;
+    }
+    
+    .filtro-meses button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 5px;
+    }
+    
+    .container {
+        padding: 15px 10px;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+        min-width: 600px;
+    }
+    
+    .full-width .table-container {
+        overflow-x: auto;
+    }
+    
+    .full-width .table {
+        min-width: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 18px;
+    }
+    
+    .card-title {
+        font-size: 15px;
+    }
+    
+    .card-value {
+        font-size: 32px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 5px 3px;
+        font-size: 11px;
+    }
+    
+    .filtro-item label {
+        font-size: 13px;
+    }
+    
+    .filtro-item select {
+        padding: 8px 10px;
+        font-size: 14px;
     }
 }
 

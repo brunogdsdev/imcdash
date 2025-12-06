@@ -16,10 +16,22 @@ body {
     padding: 10px;
 }
 
+@media (max-width: 768px) {
+    .box {
+        flex-direction: column;
+        padding: 10px 5px;
+        gap: 15px;
+    }
+}
 
 @media (max-width: 480px) {
     body{
         padding: 2px;
+    }
+    
+    .box {
+        padding: 8px 3px;
+        gap: 12px;
     }
 }
 
@@ -60,10 +72,23 @@ body {
     .top-menu {
         flex-wrap: wrap;
         gap: 20px;
-        padding: 10px 0;
+        padding: 12px 0;
     }
 
     .menu-item {
         font-size: 16px;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-menu {
+        gap: 15px;
+        padding: 10px 0;
+    }
+
+    .menu-item {
+        font-size: 14px;
+        padding: 4px 8px;
     }
 }

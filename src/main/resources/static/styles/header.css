@@ -73,12 +73,13 @@ button:hover {
         align-items: center;
         text-align: center;      /* deixa tudo centralizado */
         padding: 15px;
-        gap: 10px;
+        gap: 15px;
         width: 98%;
     }
 
     .header-logo img {
-        height: 55px;
+        height: 50px;
+        max-width: 100%;
     }
 
     .header-titulo {
@@ -87,22 +88,47 @@ button:hover {
 
     .header-filtro {
         justify-content: center; /* fica centralizado */
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
     }
 
     .header-filtro label {
-        margin-top: 10px;
+        margin-top: 5px;
         width: 100%;
         text-align: left;
-    }
-
-    .header-filtro {
-        flex-direction: column;
-        gap: 6px;
-        width: 100%;
+        font-size: 14px;
     }
 
     .header-filtro input[type="date"],
     .header-filtro button {
         width: 100%;
+        padding: 8px 12px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 12px 10px;
+        gap: 12px;
+    }
+
+    .header-logo img {
+        height: 45px;
+    }
+
+    .header-titulo {
+        font-size: 18px;
+    }
+    
+    .header-filtro label {
+        font-size: 13px;
+    }
+    
+    .header-filtro input[type="date"],
+    .header-filtro button {
+        padding: 7px 10px;
+        font-size: 14px;
     }
 }

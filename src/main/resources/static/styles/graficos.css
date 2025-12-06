@@ -28,3 +28,36 @@ h2{
         height: 200px !important;
     }
 }
+
+/* Responsividade para gráficos */
+@media (max-width: 768px) {
+    .card-grafico {
+        padding: 15px;
+        margin: 15px 10px;
+    }
+    
+    .grafico-container {
+        height: 250px !important;
+    }
+    
+    .card-grafico h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-grafico {
+        padding: 12px;
+        margin: 10px 5px;
+    }
+    
+    .grafico-container {
+        height: 220px !important;
+    }
+    
+    .card-grafico h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+}

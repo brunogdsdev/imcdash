@@ -11,6 +11,77 @@
     <link rel="stylesheet" href="/styles/presenca.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Melhorias de responsividade para presenca */
+        @media (max-width: 768px) {
+            .filtro-meses {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .filtro-item {
+                width: 100%;
+            }
+            
+            .filtro-item select {
+                width: 100%;
+            }
+            
+            .filtro-meses button {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                min-width: 600px;
+            }
+            
+            .full-width .table {
+                min-width: 400px;
+            }
+            
+            .card-grafico {
+                margin: 15px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 20px;
+            }
+            
+            .card-title {
+                font-size: 16px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 6px 4px;
+                font-size: 12px;
+            }
+            
+            .card-grafico h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
 
