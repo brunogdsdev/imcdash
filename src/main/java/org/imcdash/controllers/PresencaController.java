@@ -28,7 +28,8 @@ public class PresencaController {
     @GetMapping("/ranking")
     public List<Map<String, Object>> ranking(
             @RequestParam(required = false) Integer start,
-            @RequestParam(required = false) Integer end) {
+            @RequestParam(required = false) Integer end,
+            @RequestParam(required = false) String nome) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
@@ -42,10 +43,18 @@ public class PresencaController {
         // but to be safe, do not remove first row.
         // iterate rows
         Map<String, Integer> contador = new HashMap<>();
+        
+        // Normalizar filtro de nome para comparação case-insensitive
+        String filtroNome = (nome != null && !nome.isBlank()) ? nome.trim().toLowerCase() : null;
 
         for (List<String> linha : values) {
             if (linha.size() <= INDEX_NOME) continue;
-            String nome = (linha.get(INDEX_NOME) == null || linha.get(INDEX_NOME).isBlank()) ? "Sem Nome" : linha.get(INDEX_NOME).trim();
+            String nomeLinha = (linha.get(INDEX_NOME) == null || linha.get(INDEX_NOME).isBlank()) ? "Sem Nome" : linha.get(INDEX_NOME).trim();
+            
+            // Aplicar filtro de nome se fornecido
+            if (filtroNome != null && !nomeLinha.toLowerCase().contains(filtroNome)) {
+                continue;
+            }
 
             int soma = 0;
             for (int mes = s; mes <= e; mes++) {
@@ -55,7 +64,7 @@ public class PresencaController {
                 }
             }
             // opcional: se soma == 0 você pode ignorar, mas vamos incluir
-            contador.put(nome, contador.getOrDefault(nome, 0) + soma);
+            contador.put(nomeLinha, contador.getOrDefault(nomeLinha, 0) + soma);
         }
 
         return contador.entrySet().stream()

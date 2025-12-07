@@ -3,7 +3,8 @@
 /* ======================= */
 
 .header {
-    width: 96%;
+    width: 100%;
+    max-width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -16,6 +17,7 @@
 
     flex-wrap: wrap; /* ESSENCIAL PARA RESPONSIVIDADE */
     gap: 20px;       /* Espaço quando quebrar para baixo */
+    box-sizing: border-box;
 }
 
 /* LOGO */
@@ -74,7 +76,8 @@ button:hover {
         text-align: center;      /* deixa tudo centralizado */
         padding: 15px;
         gap: 15px;
-        width: 98%;
+        width: 100%;
+        max-width: 100%;
     }
 
     .header-logo img {

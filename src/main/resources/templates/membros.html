@@ -1,20 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <title>Dashboard IMC</title>
-    <link rel="stylesheet" href="/styles/cardContagem.css">
-    <link rel="stylesheet" href="/styles/card.css">
-    <link rel="stylesheet" href="/styles/graficos.css">
-    <link rel="stylesheet" href="/styles/header.css">
-    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" th:href="@{/styles/cardContagem.css}" href="/styles/cardContagem.css">
+    <link rel="stylesheet" th:href="@{/styles/card.css}" href="/styles/card.css">
+    <link rel="stylesheet" th:href="@{/styles/graficos.css}" href="/styles/graficos.css">
+    <link rel="stylesheet" th:href="@{/styles/header.css}" href="/styles/header.css">
+    <link rel="stylesheet" th:href="@{/styles/index.css}" href="/styles/index.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Prevenir overflow horizontal globalmente */
+        html,
+        body {
+            overflow-x: hidden;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         /* MENU SUPERIOR */
         .top-menu {
             width: 100%;
+            max-width: 100%;
             background: #003f99;
             display: flex;
             justify-content: center;
@@ -56,6 +69,9 @@
             align-items: center;
             padding: 25px;
             flex-wrap: wrap;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .header-logo {
@@ -144,6 +160,7 @@
             max-width: 1300px;
             margin: auto;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         @media (max-width: 768px) {
@@ -230,6 +247,68 @@
             grid-column: 1 / -1;
         }
 
+        /* CARD DO GRÁFICO - Força largura total */
+        .card.grafico-card,
+        .card-grafico {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 100% !important;
+            margin-bottom: 30px;
+            overflow: hidden;
+            /* Muda para hidden no mobile para evitar que o gráfico saia */
+            clear: both;
+            box-sizing: border-box;
+            display: block;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Garantir que o container não limite a largura do card do gráfico */
+        .container>.card.grafico-card,
+        .container>.card-grafico {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0;
+            margin-right: 0;
+            padding-left: 20px;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+
+            .container>.card.grafico-card,
+            .container>.card-grafico {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .card.grafico-card,
+            .card-grafico {
+                overflow: hidden;
+                /* Garante overflow hidden no mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .container>.card.grafico-card,
+            .container>.card-grafico {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .card.grafico-card,
+            .card-grafico {
+                overflow: hidden;
+                /* Garante overflow hidden no mobile pequeno */
+            }
+        }
+
+        .card.grafico-card .card-title {
+            margin-bottom: 20px;
+        }
+
         /* TABELAS */
         .table-container {
             max-height: 260px;
@@ -279,10 +358,68 @@
             }
         }
 
-        /* GRÁFICO */
-        #graficoPresencaMes {
+        .grafico-container {
+            position: relative;
+            margin-top: 20px;
+            height: 200px;
+            padding: 10px 0;
+            box-sizing: border-box;
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            /* Previne que o gráfico saia do container */
+        }
+
+        #graficoMembrosMes {
+            display: block !important;
+            max-width: 100% !important;
             width: 100% !important;
-            height: 200px !important;
+            height: 100% !important;
+            box-sizing: border-box;
+            z-index: 19;
+        }
+
+        .card canvas {
+            display: block !important;
+            max-width: 100% !important;
+        }
+
+        /* Responsividade para o container do gráfico */
+        @media (max-width: 768px) {
+            .grafico-container {
+                height: 250px !important;
+                padding: 5px 0;
+                margin-top: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grafico-container {
+                height: 220px !important;
+                padding: 5px 0;
+                margin-top: 10px;
+            }
+        }
+
+        .grafico-header {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .grafico-header .card-title {
+            margin: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .grafico-header .filtro-item {
+            flex-shrink: 0;
         }
 
 
@@ -691,6 +828,9 @@
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            clear: both;
+            position: relative;
+            z-index: 1;
         }
 
         .tabela-membros-header {
@@ -1173,12 +1313,18 @@
 
     </header>
 
+    <div class="card-grafico">
+        <h2>Entrada/Saída de Membros por Mês</h2>
 
-    <!-- CONTAINER CENTRAL -->
+        <div class="grafico-container">
+            <canvas id="graficoMembrosMes"></canvas>
+        </div>
+    </div>
+
+
+
+
     <div class="container">
-
-        <!-- ===== CARDS GERAIS ===== -->
-
 
         <!-- Tabela de Membros -->
         <div class="tabela-membros-container">
@@ -1234,11 +1380,25 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+        // Verifica se os CSS foram carregados
+        window.addEventListener('load', function () {
+            const stylesheets = document.styleSheets;
+            console.log('Total de stylesheets carregados:', stylesheets.length);
+            for (let i = 0; i < stylesheets.length; i++) {
+                try {
+                    console.log('Stylesheet', i + ':', stylesheets[i].href);
+                } catch (e) {
+                    console.log('Stylesheet', i + ': (não acessível)');
+                }
+            }
+        });
+
         // membros.js
 
         let dadosNomes = {}; // Armazena os dados de nomes recebidos da API
         let dadosTabela = []; // Armazena todos os dados da tabela
         let headersTabela = []; // Armazena os headers da tabela
+        let graficoMembros = null; // Instância do gráfico Chart.js
 
         async function carregarContagem() {
             try {
@@ -1516,11 +1676,389 @@
             renderizarTabela(dadosFiltrados);
         }
 
+        async function carregarGraficoMensal(ano) {
+            try {
+                console.log("Carregando gráfico mensal para o ano:", ano);
+
+                // Verifica se Chart.js está disponível
+                if (typeof Chart === 'undefined') {
+                    console.error("Chart.js não está carregado!");
+                    return;
+                }
+
+                // Verifica se o canvas existe
+                const canvas = document.getElementById("graficoMembrosMes");
+                if (!canvas) {
+                    console.error("Canvas 'graficoMembrosMes' não encontrado!");
+                    return;
+                }
+
+                // Garante que o canvas tenha dimensões
+                const container = canvas.parentElement;
+                if (container) {
+                    const containerWidth = container.offsetWidth;
+                    const containerHeight = container.offsetHeight;
+                    console.log("Container dimensions:", containerWidth, "x", containerHeight);
+                    if (containerWidth < 100 || containerHeight < 100) {
+                        console.warn("Container muito pequeno! Ajustando...");
+                        container.style.width = "100%";
+                        container.style.height = "400px";
+                    }
+                }
+
+                const resp = await fetch(`/api/membros/grafico-mensal?ano=${ano}`);
+
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
+
+                const data = await resp.json();
+                console.log("Dados do gráfico recebidos:", data);
+
+                // Garante que os dados são arrays
+                const conversoesPorMes = Array.isArray(data.conversoesPorMes) ? data.conversoesPorMes : [];
+                const naoAtivosPorMes = Array.isArray(data.naoAtivosPorMes) ? data.naoAtivosPorMes : [];
+                const anosDisponiveis = Array.isArray(data.anosDisponiveis) ? data.anosDisponiveis : [];
+
+                console.log("Conversões por mês:", conversoesPorMes);
+                console.log("Não ativos por mês:", naoAtivosPorMes);
+                console.log("Anos disponíveis:", anosDisponiveis);
+
+                // Atualiza o select de anos
+                const selectAno = document.getElementById("filtroAno");
+                if (selectAno) {
+                    selectAno.innerHTML = "";
+
+                    if (anosDisponiveis.length === 0) {
+                        // Se não houver anos disponíveis, adiciona pelo menos o ano atual
+                        const anoAtual = new Date().getFullYear();
+                        const option = document.createElement("option");
+                        option.value = anoAtual;
+                        option.textContent = anoAtual;
+                        option.selected = true;
+                        selectAno.appendChild(option);
+                    } else {
+                        anosDisponiveis.forEach(anoDisponivel => {
+                            const option = document.createElement("option");
+                            option.value = anoDisponivel;
+                            option.textContent = anoDisponivel;
+                            if (anoDisponivel === ano) {
+                                option.selected = true;
+                            }
+                            selectAno.appendChild(option);
+                        });
+                    }
+                }
+
+                // Nomes dos meses
+                const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+                // Destrói o gráfico anterior se existir
+                if (graficoMembros) {
+                    graficoMembros.destroy();
+                    graficoMembros = null;
+                }
+
+                // Aguarda um pouco para garantir que o DOM está pronto
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                // Verifica novamente se o canvas existe
+                const canvasAtualizado = document.getElementById("graficoMembrosMes");
+                if (!canvasAtualizado) {
+                    console.error("Canvas não encontrado após delay!");
+                    return;
+                }
+
+                // Garante que o canvas tenha dimensões corretas
+                const containerAtualizado = canvasAtualizado.parentElement;
+                if (containerAtualizado) {
+                    containerAtualizado.style.width = "100%";
+                    containerAtualizado.style.height = "400px";
+                    containerAtualizado.style.minHeight = "400px";
+                    containerAtualizado.style.display = "block";
+                    containerAtualizado.style.visibility = "visible";
+                }
+
+                // Garante que o canvas esteja visível
+                canvasAtualizado.style.display = "block";
+                canvasAtualizado.style.visibility = "visible";
+                canvasAtualizado.style.width = "100%";
+                canvasAtualizado.style.height = "100%";
+
+                // Força o canvas a ter dimensões explícitas
+                const containerWidth = containerAtualizado ? containerAtualizado.offsetWidth : 800;
+                const containerHeight = 400;
+
+                // NÃO define width/height diretamente no canvas - Chart.js faz isso automaticamente
+                // Apenas garante que o container tenha dimensões
+                if (containerAtualizado) {
+                    containerAtualizado.style.width = containerWidth + "px";
+                    containerAtualizado.style.height = containerHeight + "px";
+                }
+
+                console.log("Dimensões do canvas:", {
+                    width: canvasAtualizado.width,
+                    height: canvasAtualizado.height,
+                    offsetWidth: canvasAtualizado.offsetWidth,
+                    offsetHeight: canvasAtualizado.offsetHeight,
+                    containerWidth: containerWidth,
+                    containerHeight: containerHeight
+                });
+
+                // Cria o novo gráfico
+                const ctx = canvasAtualizado.getContext("2d");
+                if (!ctx) {
+                    console.error("Não foi possível obter o contexto 2D do canvas!");
+                    return;
+                }
+
+                // Verifica se os dados estão válidos
+                if (!Array.isArray(conversoesPorMes) || !Array.isArray(naoAtivosPorMes)) {
+                    console.error("Dados inválidos para o gráfico!");
+                    return;
+                }
+
+                // Garante que os arrays tenham 12 elementos
+                while (conversoesPorMes.length < 12) {
+                    conversoesPorMes.push(0);
+                }
+                while (naoAtivosPorMes.length < 12) {
+                    naoAtivosPorMes.push(0);
+                }
+
+                // Detecta se é mobile
+                const isMobile = window.innerWidth <= 768;
+                const isSmallMobile = window.innerWidth <= 480;
+
+                console.log("Criando gráfico com dados:", {
+                    conversoes: conversoesPorMes,
+                    naoAtivos: naoAtivosPorMes,
+                    meses: meses,
+                    canvasOffsetWidth: canvasAtualizado.offsetWidth,
+                    canvasOffsetHeight: canvasAtualizado.offsetHeight,
+                    containerWidth: containerWidth,
+                    containerHeight: containerHeight,
+                    isMobile: isMobile,
+                    isSmallMobile: isSmallMobile
+                });
+
+                try {
+                    graficoMembros = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: meses,
+                            datasets: [
+                                {
+                                    label: 'Membros Convertidos',
+                                    data: conversoesPorMes,
+                                    borderColor: 'rgb(0, 80, 200)',
+                                    backgroundColor: 'rgba(0, 80, 200, 0.1)',
+                                    tension: 0.4,
+                                    fill: false,
+                                    borderWidth: isMobile ? 2 : 3,
+                                    pointRadius: isMobile ? (isSmallMobile ? 3 : 4) : 5,
+                                    pointHoverRadius: isMobile ? (isSmallMobile ? 4 : 5) : 7,
+                                    pointBackgroundColor: 'rgb(0, 80, 200)',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: isMobile ? 1 : 2
+                                },
+                                {
+                                    label: 'Membros Não Ativos',
+                                    data: naoAtivosPorMes,
+                                    borderColor: 'rgb(220, 53, 69)',
+                                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                    tension: 0.4,
+                                    fill: false,
+                                    borderWidth: isMobile ? 2 : 3,
+                                    pointRadius: isMobile ? (isSmallMobile ? 3 : 4) : 5,
+                                    pointHoverRadius: isMobile ? (isSmallMobile ? 4 : 5) : 7,
+                                    pointBackgroundColor: 'rgb(220, 53, 69)',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: isMobile ? 1 : 2
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            aspectRatio: 2,
+                            layout: {
+                                padding: isMobile ? (isSmallMobile ? 5 : 10) : 15
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            size: isMobile ? (isSmallMobile ? 11 : 12) : 14,
+                                            weight: 'bold'
+                                        },
+                                        padding: isMobile ? (isSmallMobile ? 8 : 10) : 15,
+                                        usePointStyle: true,
+                                        boxWidth: isMobile ? (isSmallMobile ? 10 : 12) : 15
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: isMobile ? 8 : 12,
+                                    titleFont: {
+                                        size: isMobile ? 12 : 14,
+                                        weight: 'bold'
+                                    },
+                                    bodyFont: {
+                                        size: isMobile ? 11 : 13
+                                    },
+                                    callbacks: {
+                                        label: function (context) {
+                                            return context.dataset.label + ': ' + context.parsed.y + ' membro(s)';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1,
+                                        font: {
+                                            size: isMobile ? (isSmallMobile ? 10 : 11) : 12
+                                        },
+                                        padding: isMobile ? 5 : 8
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)',
+                                        drawBorder: true
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            size: isMobile ? (isSmallMobile ? 9 : 10) : 12
+                                        },
+                                        padding: isMobile ? 5 : 8,
+                                        maxRotation: isMobile ? 45 : 0,
+                                        minRotation: isMobile ? 45 : 0
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            },
+                            interaction: {
+                                mode: 'nearest',
+                                axis: 'x',
+                                intersect: false
+                            }
+                        }
+                    });
+                    console.log("Gráfico criado com sucesso!", graficoMembros);
+                    console.log("Estado do gráfico:", {
+                        data: graficoMembros.data,
+                        options: graficoMembros.options,
+                        width: graficoMembros.width,
+                        height: graficoMembros.height
+                    });
+
+                    // Força o redraw do gráfico
+                    if (graficoMembros) {
+                        // Aguarda um frame antes de atualizar
+                        requestAnimationFrame(() => {
+                            graficoMembros.resize();
+                            graficoMembros.update('none');
+                            console.log("Gráfico atualizado após resize!");
+                        });
+                    }
+
+                    // Adiciona listener de resize para atualizar o gráfico quando a janela mudar de tamanho
+                    let resizeTimeout;
+                    if (!window.graficoResizeListener) {
+                        window.graficoResizeListener = function () {
+                            clearTimeout(resizeTimeout);
+                            resizeTimeout = setTimeout(() => {
+                                if (graficoMembros) {
+                                    graficoMembros.resize();
+                                    graficoMembros.update('none');
+                                }
+                            }, 250); // Debounce de 250ms
+                        };
+                        window.addEventListener('resize', window.graficoResizeListener);
+                    }
+
+                    // Verifica se o gráfico está visível após um delay
+                    setTimeout(() => {
+                        const canvasFinal = document.getElementById("graficoMembrosMes");
+                        if (canvasFinal) {
+                            const styles = window.getComputedStyle(canvasFinal);
+                            console.log("Canvas após criação:", {
+                                display: styles.display,
+                                visibility: styles.visibility,
+                                width: canvasFinal.offsetWidth,
+                                height: canvasFinal.offsetHeight,
+                                parentDisplay: window.getComputedStyle(canvasFinal.parentElement).display,
+                                parentVisibility: window.getComputedStyle(canvasFinal.parentElement).visibility
+                            });
+
+                            // Se o canvas não estiver visível, força a visibilidade
+                            if (styles.display === 'none' || styles.visibility === 'hidden' || canvasFinal.offsetWidth === 0) {
+                                console.warn("Canvas não está visível! Forçando visibilidade...");
+                                canvasFinal.style.display = "block";
+                                canvasFinal.style.visibility = "visible";
+                                if (graficoMembros) {
+                                    graficoMembros.resize();
+                                    graficoMembros.update();
+                                }
+                            }
+                        }
+                    }, 500);
+                } catch (error) {
+                    console.error("Erro ao criar gráfico:", error);
+                    console.error("Stack trace:", error.stack);
+                    throw error;
+                }
+            } catch (error) {
+                console.error("Erro ao carregar gráfico mensal:", error);
+                // Mostra mensagem de erro no canvas se possível
+                const canvas = document.getElementById("graficoMembrosMes");
+                if (canvas) {
+                    const ctx = canvas.getContext("2d");
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = "16px Arial";
+                    ctx.fillStyle = "#999";
+                    ctx.textAlign = "center";
+                    ctx.fillText("Erro ao carregar dados do gráfico", canvas.width / 2, canvas.height / 2);
+                }
+            }
+        }
+
+        function atualizarGrafico() {
+            const anoSelecionado = parseInt(document.getElementById("filtroAno").value);
+            carregarGraficoMensal(anoSelecionado);
+        }
+
         async function carregarMembrosTudo() {
             await Promise.all([
                 carregarContagem(),
                 carregarTabela(),
             ]);
+
+            // Aguarda um pouco para garantir que tudo está carregado
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // Verifica se Chart.js está disponível antes de carregar o gráfico
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js não está disponível. Tentando novamente em 1 segundo...");
+                setTimeout(async () => {
+                    const anoAtual = new Date().getFullYear();
+                    await carregarGraficoMensal(anoAtual);
+                }, 1000);
+            } else {
+                // Carrega o gráfico com o ano atual
+                const anoAtual = new Date().getFullYear();
+                await carregarGraficoMensal(anoAtual);
+            }
         }
 
         // carregar padrão (todo ano) quando a página inicializar

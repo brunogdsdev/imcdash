@@ -20,6 +20,7 @@ public class MembrosController {
     private static final String API_KEY = "AIzaSyCqeytiZOohC_LasDdu2puR4gxLg1bVxK0";
     private static final String SHEET_ID = "1Dxg_QYJ92d6pA4WH0Qp_AkBy3awurN0s2Dn1_3VoHRQ";
     private static final String RANGE = "Respostas ao formulário 1!B2:W150";
+    private static final String RANGE_HISTORY = "HISTORICO!A2:F100";
 
     private static final RestTemplate rest = new RestTemplate();
 
@@ -197,6 +198,164 @@ public class MembrosController {
                     "nomes", "Erro"
             );
         }
+    }
+
+    @GetMapping("/grafico-mensal")
+    Map<String, Object> getGraficoMensal(@RequestParam(required = false) Integer ano) {
+        try {
+            System.out.println("Endpoint /api/membros/grafico-mensal chamado com ano: " + ano);
+            
+            // Se não especificado, usa o ano atual
+            final int anoFinal = (ano == null) ? LocalDate.now().getYear() : ano;
+            
+            // Busca os headers
+            String headerRange = "Respostas ao formulário 1!B1:W1";
+            var headerResponse = getJson(Map.class, headerRange);
+            List<String> headers = new ArrayList<>();
+            if (headerResponse != null) {
+                List<List<String>> headerValues = (List<List<String>>) headerResponse.get("values");
+                if (headerValues != null && !headerValues.isEmpty()) {
+                    headers = headerValues.get(0);
+                }
+            }
+            
+            // Encontra os índices das colunas
+            int indiceDataConversao = -1;
+            int indiceMembroAtivo = -1;
+            
+            for (int i = 0; i < headers.size(); i++) {
+                String header = headers.get(i);
+                if (header != null) {
+                    String headerLower = header.toLowerCase();
+                    // Procura por "DATA CONVERSÃO (NOVOS CONIVERTIDOS)" ou variações
+                    if (headerLower.contains("data conversão") || headerLower.contains("data conversao") || 
+                        (headerLower.contains("conversão") && headerLower.contains("novos")) ||
+                        (headerLower.contains("conversao") && headerLower.contains("novos")) ||
+                        (headerLower.contains("conversão") && headerLower.contains("convertidos")) ||
+                        (headerLower.contains("conversao") && headerLower.contains("convertidos"))) {
+                        indiceDataConversao = i;
+                        System.out.println("Encontrada coluna DATA CONVERSÃO no índice " + i + ": " + header);
+                    }
+                    // Procura por "MEMBRO ATIVO"
+                    if (headerLower.contains("membro ativo") || 
+                        (headerLower.contains("ativo") && !headerLower.contains("data conversão") && !headerLower.contains("data conversao"))) {
+                        indiceMembroAtivo = i;
+                        System.out.println("Encontrada coluna MEMBRO ATIVO no índice " + i + ": " + header);
+                    }
+                }
+            }
+            
+            System.out.println("Índice DATA CONVERSÃO: " + indiceDataConversao);
+            System.out.println("Índice MEMBRO ATIVO: " + indiceMembroAtivo);
+            
+            // Busca todos os dados
+            var response = getJson(Map.class, RANGE);
+            if (response == null) {
+                return Map.of(
+                        "conversoesPorMes", Collections.nCopies(12, 0),
+                        "naoAtivosPorMes", Collections.nCopies(12, 0),
+                        "anosDisponiveis", Collections.emptyList()
+                );
+            }
+            
+            List<List<String>> values = (List<List<String>>) response.get("values");
+            if (values == null) {
+                return Map.of(
+                        "conversoesPorMes", Collections.nCopies(12, 0),
+                        "naoAtivosPorMes", Collections.nCopies(12, 0),
+                        "anosDisponiveis", Collections.emptyList()
+                );
+            }
+            
+            // Inicializa arrays para os 12 meses (usando List para serialização JSON)
+            List<Integer> conversoesPorMes = new ArrayList<>(Collections.nCopies(12, 0));
+            List<Integer> naoAtivosPorMes = new ArrayList<>(Collections.nCopies(12, 0));
+            Set<Integer> anosDisponiveis = new TreeSet<>();
+            
+            // Formatadores de data
+            DateTimeFormatter[] formatters = {
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                DateTimeFormatter.ofPattern("d/M/yyyy"),
+                DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+                DateTimeFormatter.ofPattern("d-M-yyyy"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            };
+            
+            // Processa cada linha sem usar lambda
+            for (List<String> linha : values) {
+                if (!filterIndex(1, linha)) {
+                    continue;
+                }
+                
+                // Processa DATA CONVERSÃO
+                if (indiceDataConversao >= 0 && indiceDataConversao < linha.size()) {
+                    String dataConversaoStr = safeGet(linha, indiceDataConversao).trim();
+                    if (!dataConversaoStr.isEmpty() && !dataConversaoStr.equalsIgnoreCase("ATIVO")) {
+                        LocalDate dataConversao = parseDate(dataConversaoStr, formatters);
+                        if (dataConversao != null) {
+                            int anoConversao = dataConversao.getYear();
+                            anosDisponiveis.add(anoConversao);
+                            
+                            if (anoConversao == anoFinal) {
+                                int mes = dataConversao.getMonthValue() - 1; // 0-11
+                                if (mes >= 0 && mes < 12) {
+                                    conversoesPorMes.set(mes, conversoesPorMes.get(mes) + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Processa MEMBRO ATIVO (quando não é "ATIVO", é uma data)
+                if (indiceMembroAtivo >= 0 && indiceMembroAtivo < linha.size()) {
+                    String membroAtivoStr = safeGet(linha, indiceMembroAtivo).trim();
+                    if (!membroAtivoStr.isEmpty() && !membroAtivoStr.equalsIgnoreCase("ATIVO")) {
+                        LocalDate dataNaoAtivo = parseDate(membroAtivoStr, formatters);
+                        if (dataNaoAtivo != null) {
+                            int anoNaoAtivo = dataNaoAtivo.getYear();
+                            anosDisponiveis.add(anoNaoAtivo);
+                            
+                            if (anoNaoAtivo == anoFinal) {
+                                int mes = dataNaoAtivo.getMonthValue() - 1; // 0-11
+                                if (mes >= 0 && mes < 12) {
+                                    naoAtivosPorMes.set(mes, naoAtivosPorMes.get(mes) + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Converte Set para List ordenada
+            List<Integer> anosList = new ArrayList<>(anosDisponiveis);
+            Collections.sort(anosList, Collections.reverseOrder());
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("conversoesPorMes", conversoesPorMes);
+            resultado.put("naoAtivosPorMes", naoAtivosPorMes);
+            resultado.put("anosDisponiveis", anosList);
+            return resultado;
+        } catch (Exception e) {
+            System.err.println("Erro no endpoint /api/membros/grafico-mensal: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> erro = new HashMap<>();
+            erro.put("conversoesPorMes", Collections.nCopies(12, 0));
+            erro.put("naoAtivosPorMes", Collections.nCopies(12, 0));
+            erro.put("anosDisponiveis", Collections.emptyList());
+            return erro;
+        }
+    }
+    
+    private LocalDate parseDate(String dateStr, DateTimeFormatter[] formatters) {
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(dateStr, formatter);
+            } catch (Exception e) {
+                // Tenta próximo formatador
+            }
+        }
+        return null;
     }
 
 }

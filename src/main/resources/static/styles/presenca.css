@@ -1,12 +1,15 @@
 /* MENU SUPERIOR */
 .top-menu {
     width: 100%;
+    max-width: 100%;
     background: #003f99;
     display: flex;
     justify-content: center;
     gap: 40px;
     padding: 15px 0;
+    box-sizing: border-box;
 }
+
 .menu-item {
     color: #fff;
     font-size: 18px;
@@ -15,9 +18,11 @@
     padding-bottom: 4px;
     border-bottom: 2px solid transparent;
 }
+
 .menu-item:hover {
     border-bottom: 2px solid #ffffff80;
 }
+
 .menu-item.ativo {
     border-bottom: 2px solid #fff;
     font-weight: 700;
@@ -39,15 +44,21 @@
     align-items: center;
     padding: 25px;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
+
 .header-logo {
     height: 60px;
 }
+
 .header-title {
     font-size: 28px;
     color: #0050c8;
     font-weight: 800;
 }
+
 .header-date {
     min-width: 240px;
 }
@@ -68,6 +79,7 @@
     max-width: 1300px;
     margin: auto;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 /* GRID DE CARDS */
@@ -82,12 +94,41 @@
     background: #fff;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .card-title {
     font-size: 18px;
     margin-bottom: 10px;
 }
+
+/* FILTRO DENTRO DO CARD */
+.filtro-card {
+    margin-bottom: 15px;
+}
+
+.filtro-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 15px;
+    color: #333;
+    transition: 0.2s ease;
+    box-sizing: border-box;
+}
+
+.filtro-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+.filtro-input:hover {
+    border-color: #888;
+}
+
 .card-value {
     font-size: 42px;
     font-weight: bold;
@@ -102,16 +143,67 @@
 .table-container {
     max-height: 260px;
     overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: relative;
 }
+
 .table {
     width: 100%;
     border-collapse: collapse;
 }
+
+/* Garantir que a tabela possa expandir horizontalmente quando necessário */
+.table-container .table {
+    min-width: 600px;
+    /* Largura mínima para garantir scroll horizontal quando necessário */
+}
+
+/* Card - garantir que não limite o container da tabela */
+.card {
+    overflow: visible;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Regra específica para garantir scroll horizontal no card de Histórico */
+.card .table-container {
+    overflow-x: scroll !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* Scrollbar customizada para melhor visualização no mobile */
+.card .table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.card .table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.card .table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.card .table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .table th {
     background: #e8f0ff;
     padding: 8px;
     text-align: left;
 }
+
 .table td {
     padding: 7px;
     border-bottom: 1px solid #ddd;
@@ -169,7 +261,7 @@
 /* Ao focar */
 .filtro-item select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 4px rgba(0,123,255,0.3);
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
 }
 
 /* Hover */
@@ -186,15 +278,15 @@
         gap: 15px;
         padding: 20px 15px;
     }
-    
+
     .header-logo {
         height: 50px;
     }
-    
+
     .header-title {
         font-size: 22px;
     }
-    
+
     .filtro-meses {
         flex-direction: column;
         align-items: stretch;
@@ -210,39 +302,50 @@
         width: 100%;
         min-width: 100%;
     }
-    
+
     .filtro-meses button {
         width: 100%;
         padding: 12px;
         font-size: 16px;
         margin-top: 5px;
     }
-    
+
     .container {
         padding: 15px 10px;
     }
-    
+
     .cards-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .card {
         padding: 15px;
     }
-    
+
     .table-container {
-        overflow-x: auto;
+        overflow-x: auto !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .card .table-container {
+        overflow-x: auto !important;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .table {
         min-width: 600px;
+        width: auto;
     }
-    
+
     .full-width .table-container {
-        overflow-x: auto;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
     }
-    
+
     .full-width .table {
         min-width: 400px;
     }
@@ -252,30 +355,43 @@
     .header-title {
         font-size: 18px;
     }
-    
+
     .card-title {
         font-size: 15px;
     }
-    
+
     .card-value {
         font-size: 32px;
     }
-    
+
+    .card {
+        padding: 12px;
+        overflow: visible;
+    }
+
+    .table-container {
+        overflow-x: auto !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    .table {
+        min-width: 500px;
+    }
+
     .table th,
     .table td {
         padding: 5px 3px;
         font-size: 11px;
     }
-    
+
     .filtro-item label {
         font-size: 13px;
     }
-    
+
     .filtro-item select {
         padding: 8px 10px;
         font-size: 14px;
     }
 }
-
-
-
