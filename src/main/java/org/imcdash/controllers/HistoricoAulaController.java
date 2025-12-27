@@ -17,7 +17,7 @@ import static org.imcdash.controllers.DashboardController.getSheetJson;
 @RequestMapping("/api/history")
 public class HistoricoAulaController {
 
-    private static final String RANGE = "HISTÓRICO DE AULA 2025!A2:D50";
+    private static final String RANGE = "HISTÓRICO DE AULA 2025!A2:D350";
 
 
     @GetMapping("/get-history")

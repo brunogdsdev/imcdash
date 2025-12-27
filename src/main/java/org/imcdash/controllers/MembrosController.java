@@ -19,8 +19,8 @@ import static org.imcdash.controllers.DashboardController.*;
 public class MembrosController {
     private static final String API_KEY = "AIzaSyCqeytiZOohC_LasDdu2puR4gxLg1bVxK0";
     private static final String SHEET_ID = "1Dxg_QYJ92d6pA4WH0Qp_AkBy3awurN0s2Dn1_3VoHRQ";
-    private static final String RANGE = "Respostas ao formulário 1!B2:W150";
-    private static final String RANGE_HISTORY = "HISTORICO!A2:F100";
+    private static final String RANGE = "Respostas ao formulário 1!B2:W350";
+    private static final String RANGE_HISTORY = "HISTORICO!A2:F300";
 
     private static final RestTemplate rest = new RestTemplate();
 

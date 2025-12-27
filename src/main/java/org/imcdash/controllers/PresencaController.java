@@ -13,7 +13,7 @@ import static org.imcdash.controllers.DashboardController.*;
 @RestController
 @RequestMapping("/api/presenca")
 public class PresencaController {
-    private static final String RANGE = "RELATÓRIO 2025!A2:Q120";
+    private static final String RANGE = "RELATÓRIO 2025!A2:Q320";
     // helper: coluna indexes (0-based)
     private static final int INDEX_CLASSE = 0;   // A
     private static final int INDEX_NOME = 1;     // B

@@ -14,7 +14,7 @@ import static org.imcdash.controllers.DashboardController.*;
 @RestController
 @RequestMapping("/api/sheets")
 public class VisitanteController {
-    private static final String RANGE = "VISITANTES 2025!A2:H269";
+    private static final String RANGE = "VISITANTES 2025!A2:H869";
 
     @GetMapping("/dados")
      String getDados(){
