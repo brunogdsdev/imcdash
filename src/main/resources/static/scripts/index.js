@@ -1,58 +1,97 @@
 
 async function carregarGraficoMes(inicio, fim, ano) {
-    const resp = await fetch(`/api/sheets/por-mes?inicio=${inicio}&fim=${fim}&ano=${ano}`);
-    const data = await resp.json();
-
-    const labels = data.map(item => item.mes);
-    const valores = data.map(item => item.total);
-
-    const ctx = document.getElementById("graficoMes").getContext("2d");
-
-    // Destruir gráfico anterior se existir
-    if (graficoMesAtual) {
-        graficoMesAtual.destroy();
-        graficoMesAtual = null;
-    }
-
-    graficoMesAtual = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Visitas por mês",
-                data: valores,
-                borderWidth: 3,
-                tension: 0.2,
-                pointRadius: 5,
-                pointBackgroundColor: "#2c7be5",
-                borderColor: "#2c7be5",
-                fill: true,
-                backgroundColor: "rgba(44,123,229, .7)"
-
-            }]
-        },
-        plugins: [ChartDataLabels],
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                datalabels: {
-                    color: "#555",           // cor do número
-                    anchor: "end",           // posição
-                    align: "top",            // fica acima do ponto
-                    font: {
-                        weight: "bold",
-                        size: 12
-                    },
-                    formatter: (value) => value
-                }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
+    try {
+        const resp = await fetch(`/api/sheets/por-mes?inicio=${inicio}&fim=${fim}&ano=${ano}`);
+        if (!resp.ok) {
+            console.error("Erro ao buscar dados do gráfico:", resp.status);
+            return;
+        }
+        
+        const data = await resp.json();
+        
+        if (!data || data.length === 0) {
+            console.warn("Nenhum dado retornado para o gráfico");
+            return;
         }
 
-    });
+        const labels = data.map(item => item.mes);
+        const valores = data.map(item => item.total);
+
+        const canvas = document.getElementById("graficoMes");
+        if (!canvas) {
+            console.error("Canvas 'graficoMes' não encontrado");
+            return;
+        }
+
+        // Verificar se Chart.js está carregado
+        if (typeof Chart === 'undefined') {
+            console.error("Chart.js não está carregado");
+            return;
+        }
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            console.error("Não foi possível obter o contexto 2D");
+            return;
+        }
+
+        // Destruir gráfico anterior se existir
+        if (graficoMesAtual) {
+            graficoMesAtual.destroy();
+            graficoMesAtual = null;
+        }
+
+        // Aguardar um pouco para garantir que o canvas está pronto
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        graficoMesAtual = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Visitas por mês",
+                    data: valores,
+                    borderWidth: 3,
+                    tension: 0.2,
+                    pointRadius: 5,
+                    pointBackgroundColor: "#2c7be5",
+                    borderColor: "#2c7be5",
+                    fill: true,
+                    backgroundColor: "rgba(44,123,229, .7)"
+
+                }]
+            },
+            plugins: typeof ChartDataLabels !== 'undefined' ? [ChartDataLabels] : [],
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...(typeof ChartDataLabels !== 'undefined' ? {
+                        datalabels: {
+                            color: "#555",
+                            anchor: "end",
+                            align: "top",
+                            font: {
+                                weight: "bold",
+                                size: 12
+                            },
+                            formatter: (value) => value
+                        }
+                    } : {}),
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+
+        });
+    } catch (error) {
+        console.error("Erro ao carregar gráfico:", error);
+    }
 }
 
 
@@ -123,51 +162,76 @@ function formatarData(dataHtml) {
     return `${dia}/${mes}/${ano}`;
 }
 
-function carregarTodosOsCards(inicio, fim, ano) {
-        carregarContagem(inicio, fim, ano);
-        getTotal("culto", 3, inicio, fim, ano);
-        getTotal("representante", 4, inicio, fim, ano);
-        getTotal("classe", 5, inicio, fim, ano);
-        carregarGraficoMes(inicio, fim, ano);
+async function carregarTodosOsCards(inicio, fim, ano) {
+    try {
+        await Promise.all([
+            carregarContagem(inicio, fim, ano),
+            getTotal("culto", 3, inicio, fim, ano),
+            getTotal("representante", 4, inicio, fim, ano),
+            getTotal("classe", 5, inicio, fim, ano)
+        ]);
+        // Carregar gráfico por último para garantir que Chart.js está pronto
+        await carregarGraficoMes(inicio, fim, ano);
+    } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+    }
 }
 
 
 
-    window.onload = () => {
-        const ano = parseInt(document.getElementById("filtroAno").value || "2026", 10);
+    // Função de inicialização
+    function inicializarVisitantes() {
+        const ano = parseInt(document.getElementById("filtroAno")?.value || "2026", 10);
         const anoStr = ano.toString();
+        
         // Atualizar título inicial
         const headerTitle = document.querySelector(".header-titulo");
         if (headerTitle) {
             headerTitle.textContent = `VISITANTES ${ano}`;
         }
         
-        // Adicionar event listeners
-        document.getElementById("btnFiltrar").addEventListener("click", () => {
-            const inicioInput = document.getElementById("dataInicio").value;
-            const fimInput = document.getElementById("dataFim").value;
+        // Adicionar event listeners (usando onclick para evitar duplicatas)
+        const btnFiltrar = document.getElementById("btnFiltrar");
+        if (btnFiltrar && !btnFiltrar.onclick) {
+            btnFiltrar.onclick = () => {
+                const inicioInput = document.getElementById("dataInicio").value;
+                const fimInput = document.getElementById("dataFim").value;
 
-            if (!inicioInput || !fimInput) {
-                alert("Selecione as duas datas!");
-                return;
-            }
+                if (!inicioInput || !fimInput) {
+                    alert("Selecione as duas datas!");
+                    return;
+                }
 
-            recarregarDadosVisitantes();
-        });
+                recarregarDadosVisitantes();
+            };
+        }
 
         // Atualizar título e recarregar dados quando o ano mudar
-        document.getElementById("filtroAno").addEventListener("change", () => {
-            const anoSelecionado = parseInt(document.getElementById("filtroAno").value || "2026", 10);
-            const headerTitle = document.querySelector(".header-titulo");
-            if (headerTitle) {
-                headerTitle.textContent = `VISITANTES ${anoSelecionado}`;
-            }
-            // Atualizar datas padrão baseadas no ano
-            document.getElementById("dataInicio").value = `${anoSelecionado}-01-01`;
-            document.getElementById("dataFim").value = `${anoSelecionado}-12-31`;
-            // Recarregar dados automaticamente
-            recarregarDadosVisitantes();
-        });
+        const filtroAno = document.getElementById("filtroAno");
+        if (filtroAno && !filtroAno.onchange) {
+            filtroAno.onchange = () => {
+                const anoSelecionado = parseInt(filtroAno.value || "2026", 10);
+                const headerTitle = document.querySelector(".header-titulo");
+                if (headerTitle) {
+                    headerTitle.textContent = `VISITANTES ${anoSelecionado}`;
+                }
+                // Atualizar datas padrão baseadas no ano
+                document.getElementById("dataInicio").value = `${anoSelecionado}-01-01`;
+                document.getElementById("dataFim").value = `${anoSelecionado}-12-31`;
+                // Recarregar dados automaticamente
+                recarregarDadosVisitantes();
+            };
+        }
         
+        // Carregar dados iniciais automaticamente
+        console.log("Carregando dados iniciais para o ano", ano);
         carregarTodosOsCards(`01/01/${anoStr}`, `31/12/${anoStr}`, ano);
-    };
+    }
+
+    // Aguardar tudo estar pronto
+    window.addEventListener('load', () => {
+        // Aguardar um pouco para garantir que Chart.js está carregado
+        setTimeout(() => {
+            inicializarVisitantes();
+        }, 200);
+    });
