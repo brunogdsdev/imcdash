@@ -1,6 +1,6 @@
 
-async function carregarGraficoMes(inicio, fim) {
-    const resp = await fetch(`/api/sheets/por-mes?inicio=${inicio}&fim=${fim}`);
+async function carregarGraficoMes(inicio, fim, ano) {
+    const resp = await fetch(`/api/sheets/por-mes?inicio=${inicio}&fim=${fim}&ano=${ano}`);
     const data = await resp.json();
 
     const labels = data.map(item => item.mes);
@@ -50,16 +50,16 @@ async function carregarGraficoMes(inicio, fim) {
 }
 
 
-    async function carregarContagem(inicio, fim) {
-        const resp = await fetch(`/api/sheets/contagem?inicio=${inicio}&fim=${fim}`);
+    async function carregarContagem(inicio, fim, ano) {
+        const resp = await fetch(`/api/sheets/contagem?inicio=${inicio}&fim=${fim}&ano=${ano}`);
         const total = await resp.text();
 
         document.getElementById("contador").innerText = total;
     }
 
 
-    async function getTotal(chave, index, inicio, fim) {
-        const resp = await fetch(`/api/sheets/get-total?chave=${chave}&index=${index}&inicio=${inicio}&fim=${fim}`);
+    async function getTotal(chave, index, inicio, fim, ano) {
+        const resp = await fetch(`/api/sheets/get-total?chave=${chave}&index=${index}&inicio=${inicio}&fim=${fim}&ano=${ano}`);
         const lista = await resp.json();
 
         const tbody = document.getElementById(`tabela-body-${chave}`);
@@ -88,17 +88,36 @@ async function carregarGraficoMes(inicio, fim) {
 document.getElementById("btnFiltrar").addEventListener("click", () => {
     const inicioInput = document.getElementById("dataInicio").value;
     const fimInput = document.getElementById("dataFim").value;
+    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
 
     if (!inicioInput || !fimInput) {
         alert("Selecione as duas datas!");
         return;
     }
 
+    // Atualizar título do header
+    const headerTitle = document.querySelector(".header-titulo");
+    if (headerTitle) {
+        headerTitle.textContent = `VISITANTES ${ano}`;
+    }
+
     // Converter para formato dd/MM/yyyy esperado pelo backend
     const inicio = formatarData(inicioInput);
     const fim = formatarData(fimInput);
 
-    carregarTodosOsCards(inicio, fim);
+    carregarTodosOsCards(inicio, fim, ano);
+});
+
+// Atualizar título quando o ano mudar
+document.getElementById("filtroAno").addEventListener("change", () => {
+    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+    const headerTitle = document.querySelector(".header-titulo");
+    if (headerTitle) {
+        headerTitle.textContent = `VISITANTES ${ano}`;
+    }
+    // Atualizar datas padrão baseadas no ano
+    document.getElementById("dataInicio").value = `${ano}-01-01`;
+    document.getElementById("dataFim").value = `${ano}-12-31`;
 });
 
 // Função para converter YYYY-MM-DD (HTML date) para dd/MM/yyyy
@@ -107,16 +126,18 @@ function formatarData(dataHtml) {
     return `${dia}/${mes}/${ano}`;
 }
 
-function carregarTodosOsCards(inicio, fim) {
-        carregarContagem(inicio, fim);
-        getTotal("culto", 3, inicio, fim);
-        getTotal("representante", 4, inicio, fim);
-        getTotal("classe", 5, inicio, fim);
-        carregarGraficoMes(inicio, fim);
+function carregarTodosOsCards(inicio, fim, ano) {
+        carregarContagem(inicio, fim, ano);
+        getTotal("culto", 3, inicio, fim, ano);
+        getTotal("representante", 4, inicio, fim, ano);
+        getTotal("classe", 5, inicio, fim, ano);
+        carregarGraficoMes(inicio, fim, ano);
 }
 
 
 
     window.onload = () => {
-        carregarTodosOsCards("01/01/2025", "31/12/2025");
+        const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+        const anoStr = ano.toString();
+        carregarTodosOsCards(`01/01/${anoStr}`, `31/12/${anoStr}`, ano);
     };

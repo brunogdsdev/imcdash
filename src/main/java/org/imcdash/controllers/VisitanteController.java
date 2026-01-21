@@ -14,25 +14,30 @@ import static org.imcdash.controllers.DashboardController.*;
 @RestController
 @RequestMapping("/api/sheets")
 public class VisitanteController {
-    private static final String RANGE = "VISITANTES 2025!A2:H869";
+    
+    private static String getRange(Integer ano) {
+        int anoFinal = (ano == null) ? 2025 : ano;
+        return String.format("VISITANTES %d!A2:H869", anoFinal);
+    }
 
     @GetMapping("/dados")
-     String getDados(){
-        return getJson(String.class, RANGE);
+     String getDados(@RequestParam(required = false) Integer ano){
+        return getJson(String.class, getRange(ano));
     }
 
 
     @GetMapping("/contagem")
     int getContagem(
             @RequestParam String inicio,
-            @RequestParam String fim
+            @RequestParam String fim,
+            @RequestParam(required = false) Integer ano
     ){
 
         System.out.println("count");
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
 
-        var response = getJson(Map.class,RANGE);
+        var response = getJson(Map.class, getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
 
         long count = values.stream()
@@ -57,12 +62,13 @@ public class VisitanteController {
             @RequestParam String chave,
             @RequestParam int index,
             @RequestParam String inicio,
-            @RequestParam String fim
+            @RequestParam String fim,
+            @RequestParam(required = false) Integer ano
     ){
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
         try{
-            var response = getJson(Map.class, RANGE);
+            var response = getJson(Map.class, getRange(ano));
 
             List<List<String>> values = (List<List<String>>) response.get("values");
             Map<String, Integer> contador = new HashMap<>();
@@ -106,12 +112,13 @@ public class VisitanteController {
     @GetMapping("/por-mes")
     public List<Map<String, Object>> getTotalPorMes(
             @RequestParam String inicio,
-            @RequestParam String fim
+            @RequestParam String fim,
+            @RequestParam(required = false) Integer ano
     ) {
         LocalDate dataInicio = LocalDate.parse(inicio, formatter);
         LocalDate dataFim = LocalDate.parse(fim, formatter);
 
-        var response = getJson(Map.class, RANGE);
+        var response = getJson(Map.class, getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
 
         Map<String, Integer> contador = new LinkedHashMap<>();

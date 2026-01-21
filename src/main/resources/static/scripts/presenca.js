@@ -7,11 +7,18 @@ let inicializado = false;
 function getRangeParams() {
     const s = parseInt(document.getElementById("startMonth").value || "1", 10);
     const e = parseInt(document.getElementById("endMonth").value || "12", 10);
-    return { start: Math.min(s,e), end: Math.max(s,e) };
+    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+    return { start: Math.min(s,e), end: Math.max(s,e), ano: ano };
 }
 
 async function carregarPresencaTudo() {
-    const { start, end } = getRangeParams();
+    const { start, end, ano } = getRangeParams();
+    
+    // Atualizar título do header
+    const headerTitle = document.querySelector(".header-title");
+    if (headerTitle) {
+        headerTitle.textContent = `MEMBROS ${ano}`;
+    }
     
     // Resetar filtros quando recarregar dados
     const filtroNome = document.getElementById("filtro-nome-ranking");
@@ -21,10 +28,10 @@ async function carregarPresencaTudo() {
 
     await Promise.all([
 
-        carregarTabelaPresencaMensal(start, end),
-        carregarRanking(start, end),
-        carregarGraficoMensal(start, end),
-        carregarHistorico(start, end)
+        carregarTabelaPresencaMensal(start, end, ano),
+        carregarRanking(start, end, ano),
+        carregarGraficoMensal(start, end, ano),
+        carregarHistorico(start, end, ano)
     ]);
     
     // Garantir que os listeners estejam anexados após recarregar
@@ -32,12 +39,12 @@ async function carregarPresencaTudo() {
 }
 
 
-async function carregarRanking(start, end) {
+async function carregarRanking(start, end, ano) {
     const filtroInput = document.getElementById("filtro-nome-ranking");
     const filtroNome = filtroInput ? filtroInput.value.trim() : "";
     
     // Construir URL com filtro
-    let url = `/api/presenca/ranking?start=${start}&end=${end}`;
+    let url = `/api/presenca/ranking?start=${start}&end=${end}&ano=${ano}`;
     if (filtroNome) {
         url += `&nome=${encodeURIComponent(filtroNome)}`;
     }
@@ -62,15 +69,15 @@ async function carregarRanking(start, end) {
 }
 
 function aplicarFiltroRanking() {
-    const { start, end } = getRangeParams();
-    carregarRanking(start, end);
+    const { start, end, ano } = getRangeParams();
+    carregarRanking(start, end, ano);
 }
-async function carregarHistorico(start, end) {
+async function carregarHistorico(start, end, ano) {
     const filtroInput = document.getElementById("filtro-data-historico");
     const filtroData = filtroInput ? filtroInput.value.trim() : "";
     
     // Construir URL com filtro
-    let url = `/api/history/get-history?start=${start}&end=${end}`;
+    let url = `/api/history/get-history?start=${start}&end=${end}&ano=${ano}`;
     if (filtroData) {
         url += `&data=${encodeURIComponent(filtroData)}`;
     }
@@ -95,14 +102,14 @@ async function carregarHistorico(start, end) {
 }
 
 function aplicarFiltroHistorico() {
-    const { start, end } = getRangeParams();
-    carregarHistorico(start, end);
+    const { start, end, ano } = getRangeParams();
+    carregarHistorico(start, end, ano);
 }
 
 
-async function carregarTabelaPresencaMensal(inicio, fim) {
+async function carregarTabelaPresencaMensal(inicio, fim, ano) {
     try {
-        const url = `/api/presenca/mensal?inicio=${inicio}&fim=${fim}`;
+        const url = `/api/presenca/mensal?inicio=${inicio}&fim=${fim}&ano=${ano}`;
 
         console.log("Buscando:", url);
 
@@ -160,8 +167,8 @@ function montarTabelaPresencaMensal(dados) {
 }
 
 
-async function carregarGraficoMensal(start, end) {
-    const resp = await fetch(`/api/presenca/mensal?start=${start}&end=${end}`);
+async function carregarGraficoMensal(start, end, ano) {
+    const resp = await fetch(`/api/presenca/mensal?inicio=${start}&fim=${end}&ano=${ano}`);
     const arr = await resp.json();
     const labels = arr.map(i => i.mes);
     const valores = arr.map(i => i.total);
@@ -254,6 +261,18 @@ function inicializar() {
     if (aplicarFiltroBtn) {
         aplicarFiltroBtn.addEventListener("click", () => {
             carregarPresencaTudo();
+        });
+    }
+    
+    // Atualizar título quando o ano mudar
+    const filtroAno = document.getElementById("filtroAno");
+    if (filtroAno) {
+        filtroAno.addEventListener("change", () => {
+            const ano = parseInt(filtroAno.value || "2025", 10);
+            const headerTitle = document.querySelector(".header-title");
+            if (headerTitle) {
+                headerTitle.textContent = `MEMBROS ${ano}`;
+            }
         });
     }
     

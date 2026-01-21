@@ -13,13 +13,17 @@ import static org.imcdash.controllers.DashboardController.*;
 @RestController
 @RequestMapping("/api/presenca")
 public class PresencaController {
-    private static final String RANGE = "RELATÓRIO 2025!A2:Q320";
     // helper: coluna indexes (0-based)
     private static final int INDEX_CLASSE = 0;   // A
     private static final int INDEX_NOME = 1;     // B
     private static final int INDEX_MES_START = 4; // E -> janeiro
     private static final int INDEX_MES_END = 15;  // P -> dezembro
     private static final int INDEX_TOTAL_ANUAL = 16; // Q
+    
+    private static String getRange(Integer ano) {
+        int anoFinal = (ano == null) ? 2025 : ano;
+        return String.format("RELATÓRIO %d!A2:Q320", anoFinal);
+    }
 
 
     // ============================
@@ -29,13 +33,14 @@ public class PresencaController {
     public List<Map<String, Object>> ranking(
             @RequestParam(required = false) Integer start,
             @RequestParam(required = false) Integer end,
-            @RequestParam(required = false) String nome) {
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) Integer ano) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
         if (s > e) { int tmp = s; s = e; e = tmp; }
 
-        Map response = getSheetJson(RANGE);
+        Map response = getSheetJson(getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
         if (values == null || values.isEmpty()) return Collections.emptyList();
 
@@ -86,13 +91,14 @@ public class PresencaController {
     @GetMapping("/por-classe")
     public List<Map<String, Object>> porClasse(
             @RequestParam(required = false) Integer start,
-            @RequestParam(required = false) Integer end) {
+            @RequestParam(required = false) Integer end,
+            @RequestParam(required = false) Integer ano) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
         if (s > e) { int tmp = s; s = e; e = tmp; }
 
-        Map response = getSheetJson(RANGE);
+        Map response = getSheetJson(getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
         if (values == null || values.isEmpty()) return Collections.emptyList();
 
@@ -125,7 +131,8 @@ public class PresencaController {
     @GetMapping("/mensal")
     public List<Map<String, Object>> getPresencaMensal(
             @RequestParam(required = false) Integer inicio,
-            @RequestParam(required = false) Integer fim) {
+            @RequestParam(required = false) Integer fim,
+            @RequestParam(required = false) Integer ano) {
 
         // Valores padrão (1 = Janeiro, 12 = Dezembro)
         int mesInicio = (inicio == null) ? 1 : Math.max(1, Math.min(inicio, 12));
@@ -138,7 +145,7 @@ public class PresencaController {
         }
 
         // Carrega dados
-        var response = getJson(Map.class, RANGE);
+        var response = getJson(Map.class, getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
 
         if (values == null || values.size() <= 1) {
@@ -202,13 +209,14 @@ public class PresencaController {
     @GetMapping("/mensal-old")
     public List<Map<String,Object>> mensal(
             @RequestParam(required = false) Integer start,
-            @RequestParam(required = false) Integer end) {
+            @RequestParam(required = false) Integer end,
+            @RequestParam(required = false) Integer ano) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
         if (s > e) { int tmp = s; s = e; e = tmp; }
 
-        Map response = getSheetJson(RANGE);
+        Map response = getSheetJson(getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
         if (values == null || values.isEmpty()) return Collections.emptyList();
 
@@ -239,13 +247,14 @@ public class PresencaController {
     @GetMapping("/total")
     public Map<String,Object> totalGeral(
             @RequestParam(required = false) Integer start,
-            @RequestParam(required = false) Integer end) {
+            @RequestParam(required = false) Integer end,
+            @RequestParam(required = false) Integer ano) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
         if (s > e) { int tmp = s; s = e; e = tmp; }
 
-        Map response = getSheetJson(RANGE);
+        Map response = getSheetJson(getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
 
         System.out.println(values);

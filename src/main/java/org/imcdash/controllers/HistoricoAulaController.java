@@ -17,20 +17,23 @@ import static org.imcdash.controllers.DashboardController.getSheetJson;
 @RequestMapping("/api/history")
 public class HistoricoAulaController {
 
-    private static final String RANGE = "HISTÓRICO DE AULA 2025!A2:D350";
-
+    private static String getRange(Integer ano) {
+        int anoFinal = (ano == null) ? 2025 : ano;
+        return String.format("HISTÓRICO DE AULA %d!A2:D350", anoFinal);
+    }
 
     @GetMapping("/get-history")
     List<List<String>> getHistory(
             @RequestParam(required = false) Integer start,
             @RequestParam(required = false) Integer end,
-            @RequestParam(required = false) String data) {
+            @RequestParam(required = false) String data,
+            @RequestParam(required = false) Integer ano) {
 
         int s = (start == null) ? 1 : clampMonth(start);
         int e = (end == null) ? 12 : clampMonth(end);
         if (s > e) { int tmp = s; s = e; e = tmp; }
 
-        Map response = getSheetJson(RANGE);
+        Map response = getSheetJson(getRange(ano));
         List<List<String>> values = (List<List<String>>) response.get("values");
         if(values == null || values.isEmpty()) return Collections.emptyList();
 
