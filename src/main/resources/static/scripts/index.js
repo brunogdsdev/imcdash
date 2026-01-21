@@ -1,21 +1,24 @@
 
 async function carregarGraficoMes(inicio, fim, ano) {
     try {
+        console.log("Carregando gráfico com parâmetros:", { inicio, fim, ano });
         const resp = await fetch(`/api/sheets/por-mes?inicio=${inicio}&fim=${fim}&ano=${ano}`);
         if (!resp.ok) {
             console.error("Erro ao buscar dados do gráfico:", resp.status);
             return;
         }
-        
-        const data = await resp.json();
-        
+
+        let data = await resp.json();
+        console.log("Dados recebidos do gráfico:", data);
+
         if (!data || data.length === 0) {
             console.warn("Nenhum dado retornado para o gráfico");
-            return;
+            // Criar gráfico vazio mesmo assim
+            data = [];
         }
 
-        const labels = data.map(item => item.mes);
-        const valores = data.map(item => item.total);
+        const labels = data.length > 0 ? data.map(item => item.mes) : [];
+        const valores = data.length > 0 ? data.map(item => item.total) : [];
 
         const canvas = document.getElementById("graficoMes");
         if (!canvas) {
@@ -41,16 +44,15 @@ async function carregarGraficoMes(inicio, fim, ano) {
             graficoMesAtual = null;
         }
 
-        // Aguardar um pouco para garantir que o canvas está pronto
-        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log("Criando gráfico com labels:", labels, "e valores:", valores);
 
         graficoMesAtual = new Chart(ctx, {
             type: "line",
             data: {
-                labels: labels,
+                labels: labels.length > 0 ? labels : ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
                 datasets: [{
                     label: "Visitas por mês",
-                    data: valores,
+                    data: valores.length > 0 ? valores : [],
                     borderWidth: 3,
                     tension: 0.2,
                     pointRadius: 5,
@@ -89,44 +91,47 @@ async function carregarGraficoMes(inicio, fim, ano) {
             }
 
         });
+
+        console.log("Gráfico criado com sucesso!");
     } catch (error) {
         console.error("Erro ao carregar gráfico:", error);
+        console.error("Stack trace:", error.stack);
     }
 }
 
 
-    async function carregarContagem(inicio, fim, ano) {
-        const resp = await fetch(`/api/sheets/contagem?inicio=${inicio}&fim=${fim}&ano=${ano}`);
-        const total = await resp.text();
+async function carregarContagem(inicio, fim, ano) {
+    const resp = await fetch(`/api/sheets/contagem?inicio=${inicio}&fim=${fim}&ano=${ano}`);
+    const total = await resp.text();
 
-        document.getElementById("contador").innerText = total;
-    }
+    document.getElementById("contador").innerText = total;
+}
 
 
-    async function getTotal(chave, index, inicio, fim, ano) {
-        const resp = await fetch(`/api/sheets/get-total?chave=${chave}&index=${index}&inicio=${inicio}&fim=${fim}&ano=${ano}`);
-        const lista = await resp.json();
+async function getTotal(chave, index, inicio, fim, ano) {
+    const resp = await fetch(`/api/sheets/get-total?chave=${chave}&index=${index}&inicio=${inicio}&fim=${fim}&ano=${ano}`);
+    const lista = await resp.json();
 
-        const tbody = document.getElementById(`tabela-body-${chave}`);
-        const totalItens = document.getElementById(`total-itens-${chave}`);
+    const tbody = document.getElementById(`tabela-body-${chave}`);
+    const totalItens = document.getElementById(`total-itens-${chave}`);
 
-        tbody.innerHTML = "";
+    tbody.innerHTML = "";
 
-        lista.forEach((item, index) => {
-            const tr = document.createElement("tr");
+    lista.forEach((item, index) => {
+        const tr = document.createElement("tr");
 
-            tr.innerHTML = `
+        tr.innerHTML = `
                 <td>${index + 1}.</td>
                 <td>${item[chave]}</td>
                 <td>${item.total}</td>
             `;
 
-            tbody.appendChild(tr);
-        });
+        tbody.appendChild(tr);
+    });
 
-            totalItens.textContent = `${lista.length} itens encontrados`;
+    totalItens.textContent = `${lista.length} itens encontrados`;
 
-    }
+}
 
 
 
@@ -179,59 +184,83 @@ async function carregarTodosOsCards(inicio, fim, ano) {
 
 
 
-    // Função de inicialização
-    function inicializarVisitantes() {
-        const ano = parseInt(document.getElementById("filtroAno")?.value || "2026", 10);
-        const anoStr = ano.toString();
-        
-        // Atualizar título inicial
-        const headerTitle = document.querySelector(".header-titulo");
-        if (headerTitle) {
-            headerTitle.textContent = `VISITANTES ${ano}`;
-        }
-        
-        // Adicionar event listeners (usando onclick para evitar duplicatas)
-        const btnFiltrar = document.getElementById("btnFiltrar");
-        if (btnFiltrar && !btnFiltrar.onclick) {
-            btnFiltrar.onclick = () => {
-                const inicioInput = document.getElementById("dataInicio").value;
-                const fimInput = document.getElementById("dataFim").value;
+// Função de inicialização
+function inicializarVisitantes() {
+    console.log("Inicializando visitantes...");
+    const ano = parseInt(document.getElementById("filtroAno")?.value || "2026", 10);
+    const anoStr = ano.toString();
 
-                if (!inicioInput || !fimInput) {
-                    alert("Selecione as duas datas!");
-                    return;
-                }
-
-                recarregarDadosVisitantes();
-            };
-        }
-
-        // Atualizar título e recarregar dados quando o ano mudar
-        const filtroAno = document.getElementById("filtroAno");
-        if (filtroAno && !filtroAno.onchange) {
-            filtroAno.onchange = () => {
-                const anoSelecionado = parseInt(filtroAno.value || "2026", 10);
-                const headerTitle = document.querySelector(".header-titulo");
-                if (headerTitle) {
-                    headerTitle.textContent = `VISITANTES ${anoSelecionado}`;
-                }
-                // Atualizar datas padrão baseadas no ano
-                document.getElementById("dataInicio").value = `${anoSelecionado}-01-01`;
-                document.getElementById("dataFim").value = `${anoSelecionado}-12-31`;
-                // Recarregar dados automaticamente
-                recarregarDadosVisitantes();
-            };
-        }
-        
-        // Carregar dados iniciais automaticamente
-        console.log("Carregando dados iniciais para o ano", ano);
-        carregarTodosOsCards(`01/01/${anoStr}`, `31/12/${anoStr}`, ano);
+    // Atualizar título inicial
+    const headerTitle = document.querySelector(".header-titulo");
+    if (headerTitle) {
+        headerTitle.textContent = `VISITANTES ${ano}`;
     }
 
-    // Aguardar tudo estar pronto
-    window.addEventListener('load', () => {
-        // Aguardar um pouco para garantir que Chart.js está carregado
-        setTimeout(() => {
-            inicializarVisitantes();
-        }, 200);
+    // Adicionar event listeners
+    const btnFiltrar = document.getElementById("btnFiltrar");
+    if (btnFiltrar) {
+        btnFiltrar.onclick = () => {
+            const inicioInput = document.getElementById("dataInicio").value;
+            const fimInput = document.getElementById("dataFim").value;
+
+            if (!inicioInput || !fimInput) {
+                alert("Selecione as duas datas!");
+                return;
+            }
+
+            recarregarDadosVisitantes();
+        };
+    }
+
+    // Atualizar título e recarregar dados quando o ano mudar
+    const filtroAno = document.getElementById("filtroAno");
+    if (filtroAno) {
+        filtroAno.onchange = () => {
+            const anoSelecionado = parseInt(filtroAno.value || "2026", 10);
+            const headerTitle = document.querySelector(".header-titulo");
+            if (headerTitle) {
+                headerTitle.textContent = `VISITANTES ${anoSelecionado}`;
+            }
+            // Atualizar datas padrão baseadas no ano
+            document.getElementById("dataInicio").value = `${anoSelecionado}-01-01`;
+            document.getElementById("dataFim").value = `${anoSelecionado}-12-31`;
+            // Recarregar dados automaticamente
+            recarregarDadosVisitantes();
+        };
+    }
+
+    // Carregar dados iniciais automaticamente
+    console.log("Carregando dados iniciais para o ano", ano);
+    carregarTodosOsCards(`01/01/${anoStr}`, `31/12/${anoStr}`, ano);
+}
+
+// Função para aguardar Chart.js e inicializar
+let tentativasChart = 0;
+const maxTentativasChart = 50; // 5 segundos máximo
+
+function aguardarEInicializar() {
+    tentativasChart++;
+    console.log(`Verificando Chart.js (tentativa ${tentativasChart}/${maxTentativasChart})...`);
+
+    if (typeof Chart !== 'undefined') {
+        console.log("Chart.js disponível, inicializando...");
+        setTimeout(() => inicializarVisitantes(), 100);
+    } else if (tentativasChart < maxTentativasChart) {
+        setTimeout(aguardarEInicializar, 100);
+    } else {
+        console.warn("Chart.js não carregou após timeout, inicializando mesmo assim...");
+        inicializarVisitantes();
+    }
+}
+
+// Executar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM carregado, iniciando verificação...");
+        aguardarEInicializar();
     });
+} else {
+    // DOM já está pronto
+    console.log("DOM já pronto, iniciando verificação...");
+    aguardarEInicializar();
+}
