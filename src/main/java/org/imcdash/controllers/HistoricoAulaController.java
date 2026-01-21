@@ -18,7 +18,7 @@ import static org.imcdash.controllers.DashboardController.getSheetJson;
 public class HistoricoAulaController {
 
     private static String getRange(Integer ano) {
-        int anoFinal = (ano == null) ? 2025 : ano;
+        int anoFinal = (ano == null) ? 2026 : ano;
         return String.format("HISTÓRICO DE AULA %d!A2:D350", anoFinal);
     }
 

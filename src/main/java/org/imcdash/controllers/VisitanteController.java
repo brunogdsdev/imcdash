@@ -16,7 +16,7 @@ import static org.imcdash.controllers.DashboardController.*;
 public class VisitanteController {
     
     private static String getRange(Integer ano) {
-        int anoFinal = (ano == null) ? 2025 : ano;
+        int anoFinal = (ano == null) ? 2026 : ano;
         return String.format("VISITANTES %d!A2:H869", anoFinal);
     }
 

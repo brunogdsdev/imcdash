@@ -7,7 +7,7 @@ let inicializado = false;
 function getRangeParams() {
     const s = parseInt(document.getElementById("startMonth").value || "1", 10);
     const e = parseInt(document.getElementById("endMonth").value || "12", 10);
-    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+    const ano = parseInt(document.getElementById("filtroAno").value || "2026", 10);
     return { start: Math.min(s,e), end: Math.max(s,e), ano: ano };
 }
 
@@ -264,15 +264,17 @@ function inicializar() {
         });
     }
     
-    // Atualizar título quando o ano mudar
+    // Atualizar título e recarregar dados quando o ano mudar
     const filtroAno = document.getElementById("filtroAno");
     if (filtroAno) {
         filtroAno.addEventListener("change", () => {
-            const ano = parseInt(filtroAno.value || "2025", 10);
+            const ano = parseInt(filtroAno.value || "2026", 10);
             const headerTitle = document.querySelector(".header-title");
             if (headerTitle) {
                 headerTitle.textContent = `MEMBROS ${ano}`;
             }
+            // Recarregar dados automaticamente quando o ano mudar
+            carregarPresencaTudo();
         });
     }
     

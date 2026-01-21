@@ -8,7 +8,13 @@ async function carregarGraficoMes(inicio, fim, ano) {
 
     const ctx = document.getElementById("graficoMes").getContext("2d");
 
-    new Chart(ctx, {
+    // Destruir gráfico anterior se existir
+    if (graficoMesAtual) {
+        graficoMesAtual.destroy();
+        graficoMesAtual = null;
+    }
+
+    graficoMesAtual = new Chart(ctx, {
         type: "line",
         data: {
             labels: labels,
@@ -85,13 +91,16 @@ async function carregarGraficoMes(inicio, fim, ano) {
 
 
 
-document.getElementById("btnFiltrar").addEventListener("click", () => {
+// Variável para armazenar a instância do gráfico
+let graficoMesAtual = null;
+
+// Função para recarregar dados quando o ano mudar
+function recarregarDadosVisitantes() {
     const inicioInput = document.getElementById("dataInicio").value;
     const fimInput = document.getElementById("dataFim").value;
-    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+    const ano = parseInt(document.getElementById("filtroAno").value || "2026", 10);
 
     if (!inicioInput || !fimInput) {
-        alert("Selecione as duas datas!");
         return;
     }
 
@@ -106,19 +115,7 @@ document.getElementById("btnFiltrar").addEventListener("click", () => {
     const fim = formatarData(fimInput);
 
     carregarTodosOsCards(inicio, fim, ano);
-});
-
-// Atualizar título quando o ano mudar
-document.getElementById("filtroAno").addEventListener("change", () => {
-    const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
-    const headerTitle = document.querySelector(".header-titulo");
-    if (headerTitle) {
-        headerTitle.textContent = `VISITANTES ${ano}`;
-    }
-    // Atualizar datas padrão baseadas no ano
-    document.getElementById("dataInicio").value = `${ano}-01-01`;
-    document.getElementById("dataFim").value = `${ano}-12-31`;
-});
+}
 
 // Função para converter YYYY-MM-DD (HTML date) para dd/MM/yyyy
 function formatarData(dataHtml) {
@@ -137,7 +134,40 @@ function carregarTodosOsCards(inicio, fim, ano) {
 
 
     window.onload = () => {
-        const ano = parseInt(document.getElementById("filtroAno").value || "2025", 10);
+        const ano = parseInt(document.getElementById("filtroAno").value || "2026", 10);
         const anoStr = ano.toString();
+        // Atualizar título inicial
+        const headerTitle = document.querySelector(".header-titulo");
+        if (headerTitle) {
+            headerTitle.textContent = `VISITANTES ${ano}`;
+        }
+        
+        // Adicionar event listeners
+        document.getElementById("btnFiltrar").addEventListener("click", () => {
+            const inicioInput = document.getElementById("dataInicio").value;
+            const fimInput = document.getElementById("dataFim").value;
+
+            if (!inicioInput || !fimInput) {
+                alert("Selecione as duas datas!");
+                return;
+            }
+
+            recarregarDadosVisitantes();
+        });
+
+        // Atualizar título e recarregar dados quando o ano mudar
+        document.getElementById("filtroAno").addEventListener("change", () => {
+            const anoSelecionado = parseInt(document.getElementById("filtroAno").value || "2026", 10);
+            const headerTitle = document.querySelector(".header-titulo");
+            if (headerTitle) {
+                headerTitle.textContent = `VISITANTES ${anoSelecionado}`;
+            }
+            // Atualizar datas padrão baseadas no ano
+            document.getElementById("dataInicio").value = `${anoSelecionado}-01-01`;
+            document.getElementById("dataFim").value = `${anoSelecionado}-12-31`;
+            // Recarregar dados automaticamente
+            recarregarDadosVisitantes();
+        });
+        
         carregarTodosOsCards(`01/01/${anoStr}`, `31/12/${anoStr}`, ano);
     };

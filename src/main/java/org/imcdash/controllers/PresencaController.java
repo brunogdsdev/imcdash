@@ -21,7 +21,7 @@ public class PresencaController {
     private static final int INDEX_TOTAL_ANUAL = 16; // Q
     
     private static String getRange(Integer ano) {
-        int anoFinal = (ano == null) ? 2025 : ano;
+        int anoFinal = (ano == null) ? 2026 : ano;
         return String.format("RELATÓRIO %d!A2:Q320", anoFinal);
     }
 
